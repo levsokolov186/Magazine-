@@ -1,22 +1,55 @@
+# Build results
+bin/
+obj/
 
-.vs/ShoesStore/FileContentIndex/b4edefb0-444b-4aac-ae03-5a633312ad8b.vsidx
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.rsuser
+*.nupkg
 
-obj/Debug/net8.0/ShoesStore.AssemblyInfoInputs.cache
+# NuGet
+*.nuget.props
+*.nuget.targets
+packages/
 
-obj/Debug/net8.0/ShoesStore.AssemblyInfo.cs
+# Rider
+.idea/
 
-*.cache
+# VS Code
+.vscode/
 
-obj/Debug/net8.0/rpswa.dswa.cache.json
+# User-specific files
+*.sln.docstates
 
-.vs/ShoesStore/FileContentIndex/b3153007-cca4-4d47-94ee-83d59ec9e68a.vsidx
+# Debug
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
 
-.vs/ShoesStore/FileContentIndex/ed8d761b-78a2-4256-a341-d78ff809aae5.vsidx
+# Test Results
+TestResults/
+*.trx
 
-.vs/ShoesStore/FileContentIndex/0d527ffa-125f-4d13-8b98-4d7255e90727.vsidx
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
 
-.vs/ShoesStore/FileContentIndex/fd208e18-607c-499b-a55a-c76b357c805a.vsidx
+# App settings (local development)
+appsettings.Development.json
 
-*.vsidx
-
-.vs/ShoesStore/v17/.suo
+# Logs
+*.log
