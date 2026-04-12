@@ -57,10 +57,9 @@
                 cart.push({ name: name, price: price, size: size, quantity: 1 });
             }
             localStorage.setItem('cart', JSON.stringify(cart));
-            
-            var count = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
-            $('#cartCount').text(count);
-            
+
+            updateNavCounts();
+
             showToast(name + ' (размер ' + size + ') добавлен в корзину!');
         }
 
@@ -68,6 +67,7 @@
             favorites.splice(index, 1);
             localStorage.setItem('favorites', JSON.stringify(favorites));
             renderFavorites();
+            updateNavCounts();
         }
 
         function clearAllFavorites() {
@@ -100,13 +100,13 @@
             if (favorites.length === 0) {
                 emptyMessage.style.display = 'block';
                 favoritesContent.style.display = 'none';
-                $('#favoritesCount').text(0);
+                updateNavCounts();
                 return;
             }
-            
+
             emptyMessage.style.display = 'none';
             favoritesContent.style.display = 'flex';
-            $('#favoritesCount').text(favorites.length);
+            updateNavCounts();
             
             // Group by product name
             var grouped = {};

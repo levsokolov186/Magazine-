@@ -186,6 +186,7 @@
             
             var count = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
             $('#cartCount').text(count);
+            updateNavCounts();
             
             var btn = document.getElementById('addToCartBtn');
             var originalHTML = btn.innerHTML;
@@ -214,6 +215,7 @@
             }
             localStorage.setItem('favorites', JSON.stringify(favorites));
             updateFavoritesCount();
+            updateNavCounts();
             
             var btn = document.getElementById('addToFavBtn');
             var originalHTML = btn.innerHTML;

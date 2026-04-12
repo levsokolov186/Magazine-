@@ -144,7 +144,7 @@
             
             document.getElementById('totalItems').textContent = totalItems + ' шт.';
             document.getElementById('totalPrice').textContent = formatPrice(totalPrice);
-            $('#cartCount').text(totalItems);
+            updateNavCounts();
         }
 
         function changeQuantity(index, delta) {
@@ -154,12 +154,14 @@
             }
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
+            updateNavCounts();
         }
 
         function removeItem(index) {
             cart.splice(index, 1);
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
+            updateNavCounts();
         }
 
         function clearCart() {

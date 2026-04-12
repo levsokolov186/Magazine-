@@ -70,6 +70,16 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     
     <script>
+        // Update counts on every page load
+        function updateNavCounts() {
+            var cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            var favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            
+            var cartCount = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
+            $('#cartCount').text(cartCount);
+            $('#favoritesCount').text(favorites.length);
+        }
+        
         // Theme toggle
         (function() {
             var currentTheme = localStorage.getItem('theme') || 'light';
@@ -105,6 +115,8 @@
                     }
                 });
             }
+            
+            updateNavCounts();
         })();
     </script>
 

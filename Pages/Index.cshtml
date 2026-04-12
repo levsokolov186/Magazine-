@@ -217,5 +217,12 @@
             var card = btn.closest('.product-card');
             card.click();
         }
+
+        // Update nav counts on index page too
+        $(document).ready(function() {
+            if (typeof updateNavCounts === 'function') {
+                updateNavCounts();
+            }
+        });
     </script>
 }
