@@ -24,11 +24,11 @@
         <div class="row g-4">
             <!-- Product 1 -->
             <div class="col-md-4 col-lg-3">
-                <div class="product-card">
+                <div class="product-card" onclick="openProduct('Туфли Elegance', 'Женские туфли', 6390, '👠')">
                     <div class="product-image">
                         <div class="placeholder-img"><span>👠</span></div>
                         <span class="badge-new">Новинка</span>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Туфли Elegance" data-emoji="👠">
+                        <button class="btn-favorite" onclick="event.stopPropagation(); toggleFavorite(this)" data-product="Туфли Elegance" data-emoji="👠">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
@@ -37,7 +37,7 @@
                         <p class="product-category">Женские туфли</p>
                         <div class="d-flex justify-content-between align-items-center mt-auto">
                             <span class="product-price">6 390 ₽</span>
-                            <button class="btn btn-cart" onclick="addToCart(this, 'Туфли Elegance', 6390)">
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); addToCart(this, 'Туфли Elegance', 6390)">
                                 <i class="bi bi-cart-plus"></i> В корзину
                             </button>
                         </div>
@@ -47,11 +47,11 @@
             
             <!-- Product 2 -->
             <div class="col-md-4 col-lg-3">
-                <div class="product-card">
+                <div class="product-card" onclick="openProduct('Сапоги Winter Comfort', 'Женские сапоги', 9990, '👢', 12490)">
                     <div class="product-image">
                         <div class="placeholder-img"><span>👢</span></div>
                         <span class="badge-sale">-20%</span>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Сапоги Winter Comfort" data-emoji="👢">
+                        <button class="btn-favorite" onclick="event.stopPropagation(); toggleFavorite(this)" data-product="Сапоги Winter Comfort" data-emoji="👢">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
@@ -63,7 +63,7 @@
                                 <span class="product-price">9 990 ₽</span>
                                 <br><small class="text-muted text-decoration-line-through">12 490 ₽</small>
                             </div>
-                            <button class="btn btn-cart" onclick="addToCart(this, 'Сапоги Winter Comfort', 9990)">
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); addToCart(this, 'Сапоги Winter Comfort', 9990)">
                                 <i class="bi bi-cart-plus"></i> В корзину
                             </button>
                         </div>
@@ -73,10 +73,10 @@
             
             <!-- Product 3 -->
             <div class="col-md-4 col-lg-3">
-                <div class="product-card">
+                <div class="product-card" onclick="openProduct('Балетки Soft Step', 'Женские балетки', 4290, '🥿')">
                     <div class="product-image">
                         <div class="placeholder-img"><span>🥿</span></div>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Балетки Soft Step" data-emoji="🥿">
+                        <button class="btn-favorite" onclick="event.stopPropagation(); toggleFavorite(this)" data-product="Балетки Soft Step" data-emoji="🥿">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
@@ -85,7 +85,7 @@
                         <p class="product-category">Женские балетки</p>
                         <div class="d-flex justify-content-between align-items-center mt-auto">
                             <span class="product-price">4 290 ₽</span>
-                            <button class="btn btn-cart" onclick="addToCart(this, 'Балетки Soft Step', 4290)">
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); addToCart(this, 'Балетки Soft Step', 4290)">
                                 <i class="bi bi-cart-plus"></i> В корзину
                             </button>
                         </div>
@@ -95,11 +95,11 @@
             
             <!-- Product 4 -->
             <div class="col-md-4 col-lg-3">
-                <div class="product-card">
+                <div class="product-card" onclick="openProduct('Сандалии Summer Breeze', 'Женские сандалии', 3990, '👡')">
                     <div class="product-image">
                         <div class="placeholder-img"><span>👡</span></div>
                         <span class="badge-new">Новинка</span>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Сандалии Summer Breeze" data-emoji="👡">
+                        <button class="btn-favorite" onclick="event.stopPropagation(); toggleFavorite(this)" data-product="Сандалии Summer Breeze" data-emoji="👡">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
@@ -108,7 +108,7 @@
                         <p class="product-category">Женские сандалии</p>
                         <div class="d-flex justify-content-between align-items-center mt-auto">
                             <span class="product-price">3 990 ₽</span>
-                            <button class="btn btn-cart" onclick="addToCart(this, 'Сандалии Summer Breeze', 3990)">
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); addToCart(this, 'Сандалии Summer Breeze', 3990)">
                                 <i class="bi bi-cart-plus"></i> В корзину
                             </button>
                         </div>
@@ -118,11 +118,11 @@
             
             <!-- Product 5 -->
             <div class="col-md-4 col-lg-3">
-                <div class="product-card">
+                <div class="product-card" onclick="openProduct('Ботильоны Chelsea', 'Женские ботильоны', 8490, '👢', 9990)">
                     <div class="product-image">
                         <div class="placeholder-img"><span>👢</span></div>
                         <span class="badge-sale">-15%</span>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Ботильоны Chelsea" data-emoji="👢">
+                        <button class="btn-favorite" onclick="event.stopPropagation(); toggleFavorite(this)" data-product="Ботильоны Chelsea" data-emoji="👢">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
@@ -134,7 +134,7 @@
                                 <span class="product-price">8 490 ₽</span>
                                 <br><small class="text-muted text-decoration-line-through">9 990 ₽</small>
                             </div>
-                            <button class="btn btn-cart" onclick="addToCart(this, 'Ботильоны Chelsea', 8490)">
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); addToCart(this, 'Ботильоны Chelsea', 8490)">
                                 <i class="bi bi-cart-plus"></i> В корзину
                             </button>
                         </div>
@@ -144,11 +144,11 @@
             
             <!-- Product 6 -->
             <div class="col-md-4 col-lg-3">
-                <div class="product-card">
+                <div class="product-card" onclick="openProduct('Кроссовки Lady Sport', 'Женские кроссовки', 7490, '👟')">
                     <div class="product-image">
                         <div class="placeholder-img"><span>👟</span></div>
                         <span class="badge-new">Хит</span>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Кроссовки Lady Sport" data-emoji="👟">
+                        <button class="btn-favorite" onclick="event.stopPropagation(); toggleFavorite(this)" data-product="Кроссовки Lady Sport" data-emoji="👟">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
@@ -157,7 +157,7 @@
                         <p class="product-category">Женские кроссовки</p>
                         <div class="d-flex justify-content-between align-items-center mt-auto">
                             <span class="product-price">7 490 ₽</span>
-                            <button class="btn btn-cart" onclick="addToCart(this, 'Кроссовки Lady Sport', 7490)">
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); addToCart(this, 'Кроссовки Lady Sport', 7490)">
                                 <i class="bi bi-cart-plus"></i> В корзину
                             </button>
                         </div>
@@ -167,10 +167,10 @@
             
             <!-- Product 7 -->
             <div class="col-md-4 col-lg-3">
-                <div class="product-card">
+                <div class="product-card" onclick="openProduct('Лоферы Classic', 'Женские лоферы', 5990, '👠')">
                     <div class="product-image">
                         <div class="placeholder-img"><span>👠</span></div>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Лоферы Classic" data-emoji="👠">
+                        <button class="btn-favorite" onclick="event.stopPropagation(); toggleFavorite(this)" data-product="Лоферы Classic" data-emoji="👠">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
@@ -179,7 +179,7 @@
                         <p class="product-category">Женские лоферы</p>
                         <div class="d-flex justify-content-between align-items-center mt-auto">
                             <span class="product-price">5 990 ₽</span>
-                            <button class="btn btn-cart" onclick="addToCart(this, 'Лоферы Classic', 5990)">
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); addToCart(this, 'Лоферы Classic', 5990)">
                                 <i class="bi bi-cart-plus"></i> В корзину
                             </button>
                         </div>
@@ -189,11 +189,11 @@
             
             <!-- Product 8 -->
             <div class="col-md-4 col-lg-3">
-                <div class="product-card">
+                <div class="product-card" onclick="openProduct('Сапоги-трубы Luxe', 'Женские сапоги', 14990, '👢')">
                     <div class="product-image">
                         <div class="placeholder-img"><span>👢</span></div>
                         <span class="badge-new">Премиум</span>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Сапоги-трубы Luxe" data-emoji="👢">
+                        <button class="btn-favorite" onclick="event.stopPropagation(); toggleFavorite(this)" data-product="Сапоги-трубы Luxe" data-emoji="👢">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
@@ -202,7 +202,7 @@
                         <p class="product-category">Женские сапоги</p>
                         <div class="d-flex justify-content-between align-items-center mt-auto">
                             <span class="product-price">14 990 ₽</span>
-                            <button class="btn btn-cart" onclick="addToCart(this, 'Сапоги-трубы Luxe', 14990)">
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); addToCart(this, 'Сапоги-трубы Luxe', 14990)">
                                 <i class="bi bi-cart-plus"></i> В корзину
                             </button>
                         </div>
@@ -214,6 +214,20 @@
 </section>
 
 @section Scripts {
+    <script>
+        function openProduct(name, category, price, emoji, oldPrice) {
+            var url = '/Product?name=' + encodeURIComponent(name) + 
+                      '&category=' + encodeURIComponent(category) + 
+                      '&price=' + price + 
+                      '&emoji=' + encodeURIComponent(emoji);
+            if (oldPrice) {
+                url += '&oldPrice=' + oldPrice + '&badge=-' + Math.round((1 - price / oldPrice) * 100) + '%';
+            } else {
+                url += '&badge=Новинка';
+            }
+            window.location.href = url;
+        }
+    </script>
     <script>
         var cart = JSON.parse(localStorage.getItem('cart') || '[]');
         var favorites = JSON.parse(localStorage.getItem('favorites') || '[]');

@@ -47,7 +47,16 @@
             return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
         }
 
-        function addToCart(name, price) {
+        function openProductFromFavorites(name, category, price, emoji) {
+            var url = '/Product?name=' + encodeURIComponent(name) + 
+                      '&category=' + encodeURIComponent(category) + 
+                      '&price=' + price + 
+                      '&emoji=' + encodeURIComponent(emoji) +
+                      '&badge=Новинка';
+            window.location.href = url;
+        }
+
+        function addToCartFromFavorites(name, price) {
             var existingItem = null;
             for (var i = 0; i < cart.length; i++) {
                 if (cart[i].name === name) {
@@ -65,7 +74,6 @@
             var count = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
             $('#cartCount').text(count);
             
-            // Show toast notification
             showToast(name + ' добавлен в корзину!');
         }
 
@@ -123,12 +131,12 @@
                 if (!product) continue;
                 
                 var itemHtml = '<div class="col-md-4 col-lg-3">' +
-                    '<div class="product-card">' +
+                    '<div class="product-card" onclick="openProductFromFavorites(\'' + product.name.replace(/'/g, "\\'") + '\', \'' + product.category + '\', ' + product.price + ', \'' + product.emoji + '\')">' +
                         '<div class="product-image">' +
                             '<div class="placeholder-img">' +
                                 '<span>' + product.emoji + '</span>' +
                             '</div>' +
-                            '<button class="btn-favorite active" onclick="removeFromFavorites(\'' + product.name + '\')">' +
+                            '<button class="btn-favorite active" onclick="event.stopPropagation(); removeFromFavorites(\'' + product.name.replace(/'/g, "\\'") + '\')">' +
                                 '<i class="bi bi-heart-fill"></i>' +
                             '</button>' +
                         '</div>' +
@@ -137,7 +145,7 @@
                             '<p class="product-category">' + product.category + '</p>' +
                             '<div class="d-flex justify-content-between align-items-center mt-auto">' +
                                 '<span class="product-price">' + formatPrice(product.price) + '</span>' +
-                                '<button class="btn btn-cart" onclick="addToCart(\'' + product.name + '\', ' + product.price + ')">' +
+                                '<button class="btn btn-cart" onclick="event.stopPropagation(); addToCartFromFavorites(\'' + product.name.replace(/'/g, "\\'") + '\', ' + product.price + ')">' +
                                     '<i class="bi bi-cart-plus"></i> В корзину' +
                                 '</button>' +
                             '</div>' +

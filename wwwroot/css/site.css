@@ -789,6 +789,88 @@ a:hover {
 }
 
 /* ======================================
+   PRODUCT DETAIL PAGE
+   ====================================== */
+.product-detail-image {
+  border: 2px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.btn-size {
+  min-width: 52px;
+  height: 44px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-size:hover {
+  border-color: var(--bg-btn-primary);
+  color: var(--bg-btn-primary);
+}
+
+.btn-size.active {
+  background: var(--bg-btn-primary);
+  border-color: var(--bg-btn-primary);
+  color: white;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.shake {
+  animation: shake 0.3s ease;
+}
+
+#favoriteBtn.active {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
+#favoriteBtn.active i {
+  color: white;
+}
+
+#favoriteBtn i {
+  color: var(--text-favorite-icon);
+  font-size: 1.3rem;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.breadcrumb-item a {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.breadcrumb-item a:hover {
+  color: var(--bg-btn-primary);
+}
+
+.breadcrumb-item.active {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: var(--text-muted);
+}
+
+/* ======================================
    RESPONSIVE
    ====================================== */
 @media (max-width: 768px) {
