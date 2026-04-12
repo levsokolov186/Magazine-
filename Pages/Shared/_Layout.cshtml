@@ -11,31 +11,40 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <nav class="navbar navbar-expand-lg">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-page="/Index">
-                    <i class="bi bi-shop"></i> StepStyle
+                    <i class="bi bi-handbag"></i> StepStyle
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Index">Каталог</a>
+                            <a class="nav-link" asp-area="" asp-page="/Index">
+                                <i class="bi bi-grid-3x3-gap-fill"></i> Каталог
+                            </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Favorites">
-                                <i class="bi bi-heart"></i> Избранное
-                                <span class="badge bg-danger" id="favoritesCount">0</span>
+                                <i class="bi bi-heart-fill"></i> Избранное
+                                <span class="badge bg-danger rounded-pill" id="favoritesCount">0</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Cart">
-                                <i class="bi bi-cart3"></i> Корзина
-                                <span class="badge bg-primary" id="cartCount">0</span>
+                                <i class="bi bi-cart-fill"></i> Корзина
+                                <span class="badge bg-primary rounded-pill" id="cartCount">0</span>
                             </a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav align-items-center">
+                        <li class="nav-item">
+                            <button class="btn-theme-toggle" id="themeToggle" title="Переключить тему">
+                                <i class="bi bi-moon-fill" id="themeIcon"></i>
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -48,15 +57,56 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted py-3">
-        <div class="container text-center">
-            &copy; 2026 - StepStyle
+    <footer class="footer">
+        <div class="container">
+            <div class="text-center">
+                <strong>&copy; 2026 StepStyle</strong>
+            </div>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <script>
+        // Theme toggle
+        (function() {
+            var currentTheme = localStorage.getItem('theme') || 'light';
+            var html = document.documentElement;
+            var icon = document.getElementById('themeIcon');
+            
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'dark');
+                if (icon) {
+                    icon.classList.remove('bi-moon-fill');
+                    icon.classList.add('bi-sun-fill');
+                }
+            }
+            
+            var toggle = document.getElementById('themeToggle');
+            if (toggle) {
+                toggle.addEventListener('click', function() {
+                    var theme = html.getAttribute('data-theme');
+                    if (theme === 'dark') {
+                        html.removeAttribute('data-theme');
+                        localStorage.setItem('theme', 'light');
+                        if (icon) {
+                            icon.classList.remove('bi-sun-fill');
+                            icon.classList.add('bi-moon-fill');
+                        }
+                    } else {
+                        html.setAttribute('data-theme', 'dark');
+                        localStorage.setItem('theme', 'dark');
+                        if (icon) {
+                            icon.classList.remove('bi-moon-fill');
+                            icon.classList.add('bi-sun-fill');
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

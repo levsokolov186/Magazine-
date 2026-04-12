@@ -1,76 +1,45 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "StepStyle - Женская обувь";
+    ViewData["Title"] = "StepStyle — Женская обувь";
 }
 
 <!-- Hero Section -->
 <section class="hero-section">
     <div class="hero-content">
-        <h1 class="hero-title">Коллекция женской обуви 2026</h1>
+        <h1 class="hero-title">Коллекция 2026</h1>
         <p class="hero-subtitle">Стильная и комфортная обувь для настоящих леди</p>
-        <a href="#products" class="btn btn-hero">Смотреть каталог</a>
-    </div>
-</section>
-
-<!-- Features Section -->
-<section class="features-section py-5">
-    <div class="container">
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="feature-card text-center p-4">
-                    <div class="feature-icon mb-3">
-                        <i class="bi bi-truck" style="font-size: 2.5rem;"></i>
-                    </div>
-                    <h4>Бесплатная доставка</h4>
-                    <p class="text-muted">При заказе от 5000 ₽ по всей России</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="feature-card text-center p-4">
-                    <div class="feature-icon mb-3">
-                        <i class="bi bi-arrow-repeat" style="font-size: 2.5rem;"></i>
-                    </div>
-                    <h4>Легкий возврат</h4>
-                    <p class="text-muted">30 дней на возврат без вопросов</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="feature-card text-center p-4">
-                    <div class="feature-icon mb-3">
-                        <i class="bi bi-shield-check" style="font-size: 2.5rem;"></i>
-                    </div>
-                    <h4>Гарантия качества</h4>
-                    <p class="text-muted">Только оригинальная продукция</p>
-                </div>
-            </div>
-        </div>
+        <a href="#products" class="btn btn-hero">
+            <i class="bi bi-arrow-down-circle me-2"></i>Смотреть каталог
+        </a>
     </div>
 </section>
 
 <!-- Products Section -->
-<section id="products" class="products-section py-5 bg-light">
+<section id="products" class="products-section py-5">
     <div class="container">
-        <h2 class="section-title text-center mb-5">Женская обувь</h2>
+        <div class="text-center mb-5">
+            <h2 class="section-title">Каталог</h2>
+        </div>
         <div class="row g-4">
             <!-- Product 1 -->
             <div class="col-md-4 col-lg-3">
                 <div class="product-card">
                     <div class="product-image">
-                        <div class="placeholder-img">
-                            <span>👠</span>
-                        </div>
+                        <div class="placeholder-img"><span>👠</span></div>
                         <span class="badge-new">Новинка</span>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Туфли Elegance">
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Туфли Elegance" data-emoji="👠">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
-                    <div class="product-info p-3">
+                    <div class="product-info">
                         <h5 class="product-name">Туфли Elegance</h5>
                         <p class="product-category">Женские туфли</p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
                             <span class="product-price">6 390 ₽</span>
-                            <button class="btn btn-cart" onclick="addToCart('Туфли Elegance', 6390)">В корзину</button>
+                            <button class="btn btn-cart" onclick="addToCart(this, 'Туфли Elegance', 6390)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -80,23 +49,23 @@
             <div class="col-md-4 col-lg-3">
                 <div class="product-card">
                     <div class="product-image">
-                        <div class="placeholder-img">
-                            <span>👢</span>
-                        </div>
+                        <div class="placeholder-img"><span>👢</span></div>
                         <span class="badge-sale">-20%</span>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Сапоги Winter Comfort">
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Сапоги Winter Comfort" data-emoji="👢">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
-                    <div class="product-info p-3">
+                    <div class="product-info">
                         <h5 class="product-name">Сапоги Winter Comfort</h5>
                         <p class="product-category">Женские сапоги</p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
                             <div>
                                 <span class="product-price">9 990 ₽</span>
-                                <small class="text-muted text-decoration-line-through">12 490 ₽</small>
+                                <br><small class="text-muted text-decoration-line-through">12 490 ₽</small>
                             </div>
-                            <button class="btn btn-cart" onclick="addToCart('Сапоги Winter Comfort', 9990)">В корзину</button>
+                            <button class="btn btn-cart" onclick="addToCart(this, 'Сапоги Winter Comfort', 9990)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -106,19 +75,19 @@
             <div class="col-md-4 col-lg-3">
                 <div class="product-card">
                     <div class="product-image">
-                        <div class="placeholder-img">
-                            <span>🥿</span>
-                        </div>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Балетки Soft Step">
+                        <div class="placeholder-img"><span>🥿</span></div>
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Балетки Soft Step" data-emoji="🥿">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
-                    <div class="product-info p-3">
+                    <div class="product-info">
                         <h5 class="product-name">Балетки Soft Step</h5>
                         <p class="product-category">Женские балетки</p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
                             <span class="product-price">4 290 ₽</span>
-                            <button class="btn btn-cart" onclick="addToCart('Балетки Soft Step', 4290)">В корзину</button>
+                            <button class="btn btn-cart" onclick="addToCart(this, 'Балетки Soft Step', 4290)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -128,20 +97,20 @@
             <div class="col-md-4 col-lg-3">
                 <div class="product-card">
                     <div class="product-image">
-                        <div class="placeholder-img">
-                            <span>👡</span>
-                        </div>
+                        <div class="placeholder-img"><span>👡</span></div>
                         <span class="badge-new">Новинка</span>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Сандалии Summer Breeze">
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Сандалии Summer Breeze" data-emoji="👡">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
-                    <div class="product-info p-3">
+                    <div class="product-info">
                         <h5 class="product-name">Сандалии Summer Breeze</h5>
                         <p class="product-category">Женские сандалии</p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
                             <span class="product-price">3 990 ₽</span>
-                            <button class="btn btn-cart" onclick="addToCart('Сандалии Summer Breeze', 3990)">В корзину</button>
+                            <button class="btn btn-cart" onclick="addToCart(this, 'Сандалии Summer Breeze', 3990)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -151,23 +120,23 @@
             <div class="col-md-4 col-lg-3">
                 <div class="product-card">
                     <div class="product-image">
-                        <div class="placeholder-img">
-                            <span>👢</span>
-                        </div>
+                        <div class="placeholder-img"><span>👢</span></div>
                         <span class="badge-sale">-15%</span>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Ботильоны Chelsea">
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Ботильоны Chelsea" data-emoji="👢">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
-                    <div class="product-info p-3">
+                    <div class="product-info">
                         <h5 class="product-name">Ботильоны Chelsea</h5>
                         <p class="product-category">Женские ботильоны</p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
                             <div>
                                 <span class="product-price">8 490 ₽</span>
-                                <small class="text-muted text-decoration-line-through">9 990 ₽</small>
+                                <br><small class="text-muted text-decoration-line-through">9 990 ₽</small>
                             </div>
-                            <button class="btn btn-cart" onclick="addToCart('Ботильоны Chelsea', 8490)">В корзину</button>
+                            <button class="btn btn-cart" onclick="addToCart(this, 'Ботильоны Chelsea', 8490)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -177,20 +146,20 @@
             <div class="col-md-4 col-lg-3">
                 <div class="product-card">
                     <div class="product-image">
-                        <div class="placeholder-img">
-                            <span>👟</span>
-                        </div>
+                        <div class="placeholder-img"><span>👟</span></div>
                         <span class="badge-new">Хит</span>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Кроссовки Lady Sport">
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Кроссовки Lady Sport" data-emoji="👟">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
-                    <div class="product-info p-3">
+                    <div class="product-info">
                         <h5 class="product-name">Кроссовки Lady Sport</h5>
                         <p class="product-category">Женские кроссовки</p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
                             <span class="product-price">7 490 ₽</span>
-                            <button class="btn btn-cart" onclick="addToCart('Кроссовки Lady Sport', 7490)">В корзину</button>
+                            <button class="btn btn-cart" onclick="addToCart(this, 'Кроссовки Lady Sport', 7490)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -200,19 +169,19 @@
             <div class="col-md-4 col-lg-3">
                 <div class="product-card">
                     <div class="product-image">
-                        <div class="placeholder-img">
-                            <span>👠</span>
-                        </div>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Лоферы Classic">
+                        <div class="placeholder-img"><span>👠</span></div>
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Лоферы Classic" data-emoji="👠">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
-                    <div class="product-info p-3">
+                    <div class="product-info">
                         <h5 class="product-name">Лоферы Classic</h5>
                         <p class="product-category">Женские лоферы</p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
                             <span class="product-price">5 990 ₽</span>
-                            <button class="btn btn-cart" onclick="addToCart('Лоферы Classic', 5990)">В корзину</button>
+                            <button class="btn btn-cart" onclick="addToCart(this, 'Лоферы Classic', 5990)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -222,20 +191,20 @@
             <div class="col-md-4 col-lg-3">
                 <div class="product-card">
                     <div class="product-image">
-                        <div class="placeholder-img">
-                            <span>👢</span>
-                        </div>
+                        <div class="placeholder-img"><span>👢</span></div>
                         <span class="badge-new">Премиум</span>
-                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Сапоги-трубы Luxe">
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Сапоги-трубы Luxe" data-emoji="👢">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
-                    <div class="product-info p-3">
+                    <div class="product-info">
                         <h5 class="product-name">Сапоги-трубы Luxe</h5>
                         <p class="product-category">Женские сапоги</p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
                             <span class="product-price">14 990 ₽</span>
-                            <button class="btn btn-cart" onclick="addToCart('Сапоги-трубы Luxe', 14990)">В корзину</button>
+                            <button class="btn btn-cart" onclick="addToCart(this, 'Сапоги-трубы Luxe', 14990)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -258,7 +227,7 @@
             $('#favoritesCount').text(favorites.length);
         }
 
-        function addToCart(name, price) {
+        function addToCart(btn, name, price) {
             var existingItem = null;
             for (var i = 0; i < cart.length; i++) {
                 if (cart[i].name === name) {
@@ -274,12 +243,11 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
             
-            var btn = event.target;
-            var originalText = btn.textContent;
-            btn.textContent = '✓ Добавлено';
+            var originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check-lg"></i> Добавлено';
             btn.classList.add('btn-success');
             setTimeout(function() {
-                btn.textContent = originalText;
+                btn.innerHTML = originalHTML;
                 btn.classList.remove('btn-success');
             }, 1500);
         }
