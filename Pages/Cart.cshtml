@@ -1,0 +1,150 @@
+@page
+@model CartModel
+@{
+    ViewData["Title"] = "Корзина - StepStyle";
+}
+
+<div class="container py-5">
+    <h1 class="mb-4"><i class="bi bi-cart3"></i> Корзина</h1>
+    
+    <div id="cartItems">
+        <div class="text-center py-5" id="emptyCartMessage">
+            <i class="bi bi-cart-x" style="font-size: 5rem; color: #ccc;"></i>
+            <h3 class="mt-3 text-muted">Корзина пуста</h3>
+            <p class="text-muted">Добавьте товары из каталога</p>
+            <a href="/" class="btn btn-primary mt-2">
+                <i class="bi bi-handbag"></i> Перейти в каталог
+            </a>
+        </div>
+        
+        <div class="row" id="cartContent" style="display: none;">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body" id="cartList">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Итого</h4>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Товаров:</span>
+                            <span id="totalItems">0</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fw-bold">Сумма:</span>
+                            <span class="fw-bold fs-5" id="totalPrice">0 ₽</span>
+                        </div>
+                        <button class="btn btn-primary w-100 btn-lg" onclick="checkout()">
+                            Оформить заказ
+                        </button>
+                        <button class="btn btn-outline-secondary w-100 mt-2" onclick="clearCart()">
+                            Очистить корзину
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+        }
+
+        function renderCart() {
+            var cartList = document.getElementById('cartList');
+            var emptyMessage = document.getElementById('emptyCartMessage');
+            var cartContent = document.getElementById('cartContent');
+            
+            if (cart.length === 0) {
+                emptyMessage.style.display = 'block';
+                cartContent.style.display = 'none';
+                return;
+            }
+            
+            emptyMessage.style.display = 'none';
+            cartContent.style.display = 'block';
+            
+            cartList.innerHTML = '';
+            var totalItems = 0;
+            var totalPrice = 0;
+            
+            for (var i = 0; i < cart.length; i++) {
+                var item = cart[i];
+                var itemTotal = item.price * item.quantity;
+                totalItems += item.quantity;
+                totalPrice += itemTotal;
+                
+                var itemHtml = '<div class="cart-item border-bottom pb-3 mb-3">' +
+                    '<div class="d-flex justify-content-between align-items-center">' +
+                        '<div class="d-flex align-items-center">' +
+                            '<div class="cart-item-icon bg-light rounded d-flex align-items-center justify-content-center me-3" ' +
+                                'style="width: 80px; height: 80px; font-size: 2.5rem;">👠</div>' +
+                            '<div>' +
+                                '<h5 class="mb-1">' + item.name + '</h5>' +
+                                '<p class="text-muted mb-0">Цена: ' + formatPrice(item.price) + '</p>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="text-end">' +
+                            '<div class="d-flex align-items-center mb-2">' +
+                                '<button class="btn btn-sm btn-outline-secondary" onclick="changeQuantity(' + i + ', -1)">−</button>' +
+                                '<span class="mx-3 fw-bold">' + item.quantity + '</span>' +
+                                '<button class="btn btn-sm btn-outline-secondary" onclick="changeQuantity(' + i + ', 1)">+</button>' +
+                            '</div>' +
+                            '<p class="fw-bold mb-1">' + formatPrice(itemTotal) + '</p>' +
+                            '<button class="btn btn-sm btn-danger" onclick="removeItem(' + i + ')">' +
+                                '<i class="bi bi-trash"></i> Удалить' +
+                            '</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+                
+                cartList.innerHTML += itemHtml;
+            }
+            
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('totalPrice').textContent = formatPrice(totalPrice);
+            $('#cartCount').text(totalItems);
+        }
+
+        function changeQuantity(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function clearCart() {
+            if (confirm('Очистить корзину?')) {
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCart();
+            }
+        }
+
+        function checkout() {
+            alert('Спасибо за заказ! Сумма: ' + document.getElementById('totalPrice').textContent);
+            cart = [];
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        $(document).ready(function() {
+            renderCart();
+        });
+    </script>
+}

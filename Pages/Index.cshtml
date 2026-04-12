@@ -1,14 +1,14 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "StepStyle - Магазин обуви";
+    ViewData["Title"] = "StepStyle - Женская обувь";
 }
 
 <!-- Hero Section -->
 <section class="hero-section">
     <div class="hero-content">
-        <h1 class="hero-title">Новая коллекция весна 2026</h1>
-        <p class="hero-subtitle">Откройте для себя стильную и комфортную обувь на каждый день</p>
+        <h1 class="hero-title">Коллекция женской обуви 2026</h1>
+        <p class="hero-subtitle">Стильная и комфортная обувь для настоящих леди</p>
         <a href="#products" class="btn btn-hero">Смотреть каталог</a>
     </div>
 </section>
@@ -51,23 +51,26 @@
 <!-- Products Section -->
 <section id="products" class="products-section py-5 bg-light">
     <div class="container">
-        <h2 class="section-title text-center mb-5">Популярные модели</h2>
+        <h2 class="section-title text-center mb-5">Женская обувь</h2>
         <div class="row g-4">
             <!-- Product 1 -->
             <div class="col-md-4 col-lg-3">
                 <div class="product-card">
                     <div class="product-image">
                         <div class="placeholder-img">
-                            <span>👟</span>
+                            <span>👠</span>
                         </div>
                         <span class="badge-new">Новинка</span>
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Туфли Elegance">
+                            <i class="bi bi-heart"></i>
+                        </button>
                     </div>
                     <div class="product-info p-3">
-                        <h5 class="product-name">Кроссовки AirMax Pro</h5>
-                        <p class="product-category">Мужские кроссовки</p>
+                        <h5 class="product-name">Туфли Elegance</h5>
+                        <p class="product-category">Женские туфли</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="product-price">8 990 ₽</span>
-                            <button class="btn btn-cart">В корзину</button>
+                            <span class="product-price">6 390 ₽</span>
+                            <button class="btn btn-cart" onclick="addToCart('Туфли Elegance', 6390)">В корзину</button>
                         </div>
                     </div>
                 </div>
@@ -78,19 +81,22 @@
                 <div class="product-card">
                     <div class="product-image">
                         <div class="placeholder-img">
-                            <span>👠</span>
+                            <span>👢</span>
                         </div>
                         <span class="badge-sale">-20%</span>
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Сапоги Winter Comfort">
+                            <i class="bi bi-heart"></i>
+                        </button>
                     </div>
                     <div class="product-info p-3">
-                        <h5 class="product-name">Туфли Elegance</h5>
-                        <p class="product-category">Женские туфли</p>
+                        <h5 class="product-name">Сапоги Winter Comfort</h5>
+                        <p class="product-category">Женские сапоги</p>
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <span class="product-price">6 390 ₽</span>
-                                <small class="text-muted text-decoration-line-through">7 990 ₽</small>
+                                <span class="product-price">9 990 ₽</span>
+                                <small class="text-muted text-decoration-line-through">12 490 ₽</small>
                             </div>
-                            <button class="btn btn-cart">В корзину</button>
+                            <button class="btn btn-cart" onclick="addToCart('Сапоги Winter Comfort', 9990)">В корзину</button>
                         </div>
                     </div>
                 </div>
@@ -101,15 +107,18 @@
                 <div class="product-card">
                     <div class="product-image">
                         <div class="placeholder-img">
-                            <span>👢</span>
+                            <span>🥿</span>
                         </div>
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Балетки Soft Step">
+                            <i class="bi bi-heart"></i>
+                        </button>
                     </div>
                     <div class="product-info p-3">
-                        <h5 class="product-name">Сапоги Winter Comfort</h5>
-                        <p class="product-category">Женские сапоги</p>
+                        <h5 class="product-name">Балетки Soft Step</h5>
+                        <p class="product-category">Женские балетки</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="product-price">12 490 ₽</span>
-                            <button class="btn btn-cart">В корзину</button>
+                            <span class="product-price">4 290 ₽</span>
+                            <button class="btn btn-cart" onclick="addToCart('Балетки Soft Step', 4290)">В корзину</button>
                         </div>
                     </div>
                 </div>
@@ -120,15 +129,19 @@
                 <div class="product-card">
                     <div class="product-image">
                         <div class="placeholder-img">
-                            <span>👞</span>
+                            <span>👡</span>
                         </div>
+                        <span class="badge-new">Новинка</span>
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Сандалии Summer Breeze">
+                            <i class="bi bi-heart"></i>
+                        </button>
                     </div>
                     <div class="product-info p-3">
-                        <h5 class="product-name">Оксфорды Classic</h5>
-                        <p class="product-category">Мужские туфли</p>
+                        <h5 class="product-name">Сандалии Summer Breeze</h5>
+                        <p class="product-category">Женские сандалии</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="product-price">9 990 ₽</span>
-                            <button class="btn btn-cart">В корзину</button>
+                            <span class="product-price">3 990 ₽</span>
+                            <button class="btn btn-cart" onclick="addToCart('Сандалии Summer Breeze', 3990)">В корзину</button>
                         </div>
                     </div>
                 </div>
@@ -139,16 +152,22 @@
                 <div class="product-card">
                     <div class="product-image">
                         <div class="placeholder-img">
-                            <span>👟</span>
+                            <span>👢</span>
                         </div>
-                        <span class="badge-new">Хит</span>
+                        <span class="badge-sale">-15%</span>
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Ботильоны Chelsea">
+                            <i class="bi bi-heart"></i>
+                        </button>
                     </div>
                     <div class="product-info p-3">
-                        <h5 class="product-name">Кеды Urban Style</h5>
-                        <p class="product-category">Унисекс кеды</p>
+                        <h5 class="product-name">Ботильоны Chelsea</h5>
+                        <p class="product-category">Женские ботильоны</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="product-price">5 490 ₽</span>
-                            <button class="btn btn-cart">В корзину</button>
+                            <div>
+                                <span class="product-price">8 490 ₽</span>
+                                <small class="text-muted text-decoration-line-through">9 990 ₽</small>
+                            </div>
+                            <button class="btn btn-cart" onclick="addToCart('Ботильоны Chelsea', 8490)">В корзину</button>
                         </div>
                     </div>
                 </div>
@@ -159,15 +178,19 @@
                 <div class="product-card">
                     <div class="product-image">
                         <div class="placeholder-img">
-                            <span>🥿</span>
+                            <span>👟</span>
                         </div>
+                        <span class="badge-new">Хит</span>
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Кроссовки Lady Sport">
+                            <i class="bi bi-heart"></i>
+                        </button>
                     </div>
                     <div class="product-info p-3">
-                        <h5 class="product-name">Балетки Soft Step</h5>
-                        <p class="product-category">Женские балетки</p>
+                        <h5 class="product-name">Кроссовки Lady Sport</h5>
+                        <p class="product-category">Женские кроссовки</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="product-price">4 290 ₽</span>
-                            <button class="btn btn-cart">В корзину</button>
+                            <span class="product-price">7 490 ₽</span>
+                            <button class="btn btn-cart" onclick="addToCart('Кроссовки Lady Sport', 7490)">В корзину</button>
                         </div>
                     </div>
                 </div>
@@ -178,19 +201,18 @@
                 <div class="product-card">
                     <div class="product-image">
                         <div class="placeholder-img">
-                            <span>👢</span>
+                            <span>👠</span>
                         </div>
-                        <span class="badge-sale">-15%</span>
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Лоферы Classic">
+                            <i class="bi bi-heart"></i>
+                        </button>
                     </div>
                     <div class="product-info p-3">
-                        <h5 class="product-name">Ботинки Trekker Pro</h5>
-                        <p class="product-category">Мужские ботинки</p>
+                        <h5 class="product-name">Лоферы Classic</h5>
+                        <p class="product-category">Женские лоферы</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="product-price">11 890 ₽</span>
-                                <small class="text-muted text-decoration-line-through">13 990 ₽</small>
-                            </div>
-                            <button class="btn btn-cart">В корзину</button>
+                            <span class="product-price">5 990 ₽</span>
+                            <button class="btn btn-cart" onclick="addToCart('Лоферы Classic', 5990)">В корзину</button>
                         </div>
                     </div>
                 </div>
@@ -201,44 +223,101 @@
                 <div class="product-card">
                     <div class="product-image">
                         <div class="placeholder-img">
-                            <span>👡</span>
+                            <span>👢</span>
                         </div>
-                        <span class="badge-new">Новинка</span>
+                        <span class="badge-new">Премиум</span>
+                        <button class="btn-favorite" onclick="toggleFavorite(this)" data-product="Сапоги-трубы Luxe">
+                            <i class="bi bi-heart"></i>
+                        </button>
                     </div>
                     <div class="product-info p-3">
-                        <h5 class="product-name">Сандалии Summer Breeze</h5>
-                        <p class="product-category">Женские сандалии</p>
+                        <h5 class="product-name">Сапоги-трубы Luxe</h5>
+                        <p class="product-category">Женские сапоги</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="product-price">3 990 ₽</span>
-                            <button class="btn btn-cart">В корзину</button>
+                            <span class="product-price">14 990 ₽</span>
+                            <button class="btn btn-cart" onclick="addToCart('Сапоги-трубы Luxe', 14990)">В корзину</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="text-center mt-5">
-            <button class="btn btn-outline-primary btn-lg">Показать все товары</button>
         </div>
     </div>
 </section>
 
-<!-- Newsletter Section -->
-<section class="newsletter-section py-5 bg-dark text-white">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8 text-center">
-                <h3 class="mb-3">Подпишитесь на рассылку</h3>
-                <p class="mb-4">Получайте информацию о скидках и новых коллекциях первыми!</p>
-                <div class="row justify-content-center">
-                    <div class="col-md-8">
-                        <div class="input-group">
-                            <input type="email" class="form-control form-control-lg" placeholder="Ваш email">
-                            <button class="btn btn-primary btn-lg" type="button">Подписаться</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+@section Scripts {
+    <script>
+        var cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        var favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+
+        function updateCartCount() {
+            var count = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
+            $('#cartCount').text(count);
+        }
+
+        function updateFavoritesCount() {
+            $('#favoritesCount').text(favorites.length);
+        }
+
+        function addToCart(name, price) {
+            var existingItem = null;
+            for (var i = 0; i < cart.length; i++) {
+                if (cart[i].name === name) {
+                    existingItem = cart[i];
+                    break;
+                }
+            }
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ name: name, price: price, quantity: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            
+            var btn = event.target;
+            var originalText = btn.textContent;
+            btn.textContent = '✓ Добавлено';
+            btn.classList.add('btn-success');
+            setTimeout(function() {
+                btn.textContent = originalText;
+                btn.classList.remove('btn-success');
+            }, 1500);
+        }
+
+        function toggleFavorite(btn) {
+            var productName = btn.getAttribute('data-product');
+            var icon = btn.querySelector('i');
+            var index = favorites.indexOf(productName);
+            
+            if (index > -1) {
+                favorites.splice(index, 1);
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                btn.classList.remove('active');
+            } else {
+                favorites.push(productName);
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                btn.classList.add('active');
+            }
+            
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavoritesCount();
+        }
+
+        $(document).ready(function() {
+            updateCartCount();
+            updateFavoritesCount();
+            
+            $('.btn-favorite').each(function() {
+                var productName = $(this).data('product');
+                if (favorites.indexOf(productName) > -1) {
+                    var icon = $(this).find('i')[0];
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill');
+                    $(this).addClass('active');
+                }
+            });
+        });
+    </script>
+}

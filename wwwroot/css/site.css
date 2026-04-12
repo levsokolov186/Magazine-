@@ -197,26 +197,41 @@ body {
   transform: scale(1.05);
 }
 
-/* Newsletter Section */
-.newsletter-section {
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-}
-
-.newsletter-section input[type="email"] {
-  border-radius: 25px 0 0 25px;
-  padding: 12px 20px;
+.btn-favorite {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: white;
   border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 2;
 }
 
-.newsletter-section .btn-primary {
-  border-radius: 0 25px 25px 0;
-  background: #667eea;
-  border: none;
-  padding: 12px 30px;
+.btn-favorite:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-.newsletter-section .btn-primary:hover {
-  background: #5568d3;
+.btn-favorite.active {
+  background: #dc3545;
+}
+
+.btn-favorite.active i {
+  color: white;
+}
+
+.btn-favorite i {
+  color: #dc3545;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
 }
 
 /* Navbar Customization */

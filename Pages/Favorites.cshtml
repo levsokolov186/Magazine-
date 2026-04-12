@@ -1,0 +1,133 @@
+@page
+@model FavoritesModel
+@{
+    ViewData["Title"] = "Избранное - StepStyle";
+}
+
+<div class="container py-5">
+    <h1 class="mb-4"><i class="bi bi-heart-fill text-danger"></i> Избранное</h1>
+    
+    <div id="favoritesItems">
+        <div class="text-center py-5" id="emptyFavoritesMessage">
+            <i class="bi bi-heart" style="font-size: 5rem; color: #ccc;"></i>
+            <h3 class="mt-3 text-muted">В избранном пусто</h3>
+            <p class="text-muted">Добавьте товары, нажав на сердечко в каталоге</p>
+            <a href="/" class="btn btn-primary mt-2">
+                <i class="bi bi-handbag"></i> Перейти в каталог
+            </a>
+        </div>
+        
+        <div class="row g-4" id="favoritesContent" style="display: none;">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        var cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        var allProducts = [
+            { name: 'Туфли Elegance', category: 'Женские туфли', price: 6390, emoji: '👠' },
+            { name: 'Сапоги Winter Comfort', category: 'Женские сапоги', price: 9990, emoji: '👢' },
+            { name: 'Балетки Soft Step', category: 'Женские балетки', price: 4290, emoji: '🥿' },
+            { name: 'Сандалии Summer Breeze', category: 'Женские сандалии', price: 3990, emoji: '👡' },
+            { name: 'Ботильоны Chelsea', category: 'Женские ботильоны', price: 8490, emoji: '👢' },
+            { name: 'Кроссовки Lady Sport', category: 'Женские кроссовки', price: 7490, emoji: '👟' },
+            { name: 'Лоферы Classic', category: 'Женские лоферы', price: 5990, emoji: '👠' },
+            { name: 'Сапоги-трубы Luxe', category: 'Женские сапоги', price: 14990, emoji: '👢' }
+        ];
+
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+        }
+
+        function addToCart(name, price) {
+            var existingItem = null;
+            for (var i = 0; i < cart.length; i++) {
+                if (cart[i].name === name) {
+                    existingItem = cart[i];
+                    break;
+                }
+            }
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ name: name, price: price, quantity: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            var count = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
+            $('#cartCount').text(count);
+            
+            alert(name + ' добавлен в корзину!');
+        }
+
+        function removeFromFavorites(name) {
+            var index = favorites.indexOf(name);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            renderFavorites();
+        }
+
+        function renderFavorites() {
+            var emptyMessage = document.getElementById('emptyFavoritesMessage');
+            var favoritesContent = document.getElementById('favoritesContent');
+            
+            if (favorites.length === 0) {
+                emptyMessage.style.display = 'block';
+                favoritesContent.style.display = 'none';
+                $('#favoritesCount').text(0);
+                return;
+            }
+            
+            emptyMessage.style.display = 'none';
+            favoritesContent.style.display = 'flex';
+            $('#favoritesCount').text(favorites.length);
+            
+            favoritesContent.innerHTML = '';
+            
+            for (var i = 0; i < favorites.length; i++) {
+                var favName = favorites[i];
+                var product = null;
+                for (var j = 0; j < allProducts.length; j++) {
+                    if (allProducts[j].name === favName) {
+                        product = allProducts[j];
+                        break;
+                    }
+                }
+                
+                if (!product) continue;
+                
+                var itemHtml = '<div class="col-md-4 col-lg-3">' +
+                    '<div class="product-card">' +
+                        '<div class="product-image">' +
+                            '<div class="placeholder-img">' +
+                                '<span>' + product.emoji + '</span>' +
+                            '</div>' +
+                            '<button class="btn-favorite active" onclick="removeFromFavorites(\'' + product.name + '\')">' +
+                                '<i class="bi bi-heart-fill"></i>' +
+                            '</button>' +
+                        '</div>' +
+                        '<div class="product-info p-3">' +
+                            '<h5 class="product-name">' + product.name + '</h5>' +
+                            '<p class="product-category">' + product.category + '</p>' +
+                            '<div class="d-flex justify-content-between align-items-center">' +
+                                '<span class="product-price">' + formatPrice(product.price) + '</span>' +
+                                '<button class="btn btn-cart" onclick="addToCart(\'' + product.name + '\', ' + product.price + ')">В корзину</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+                
+                favoritesContent.innerHTML += itemHtml;
+            }
+        }
+
+        $(document).ready(function() {
+            renderFavorites();
+        });
+    </script>
+}
