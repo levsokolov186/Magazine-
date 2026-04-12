@@ -1,10 +1,244 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "StepStyle - Магазин обуви";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Новая коллекция весна 2026</h1>
+        <p class="hero-subtitle">Откройте для себя стильную и комфортную обувь на каждый день</p>
+        <a href="#products" class="btn btn-hero">Смотреть каталог</a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-truck" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h4>Бесплатная доставка</h4>
+                    <p class="text-muted">При заказе от 5000 ₽ по всей России</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-arrow-repeat" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h4>Легкий возврат</h4>
+                    <p class="text-muted">30 дней на возврат без вопросов</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-shield-check" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h4>Гарантия качества</h4>
+                    <p class="text-muted">Только оригинальная продукция</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section id="products" class="products-section py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Популярные модели</h2>
+        <div class="row g-4">
+            <!-- Product 1 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="placeholder-img">
+                            <span>👟</span>
+                        </div>
+                        <span class="badge-new">Новинка</span>
+                    </div>
+                    <div class="product-info p-3">
+                        <h5 class="product-name">Кроссовки AirMax Pro</h5>
+                        <p class="product-category">Мужские кроссовки</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="product-price">8 990 ₽</span>
+                            <button class="btn btn-cart">В корзину</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 2 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="placeholder-img">
+                            <span>👠</span>
+                        </div>
+                        <span class="badge-sale">-20%</span>
+                    </div>
+                    <div class="product-info p-3">
+                        <h5 class="product-name">Туфли Elegance</h5>
+                        <p class="product-category">Женские туфли</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="product-price">6 390 ₽</span>
+                                <small class="text-muted text-decoration-line-through">7 990 ₽</small>
+                            </div>
+                            <button class="btn btn-cart">В корзину</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 3 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="placeholder-img">
+                            <span>👢</span>
+                        </div>
+                    </div>
+                    <div class="product-info p-3">
+                        <h5 class="product-name">Сапоги Winter Comfort</h5>
+                        <p class="product-category">Женские сапоги</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="product-price">12 490 ₽</span>
+                            <button class="btn btn-cart">В корзину</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 4 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="placeholder-img">
+                            <span>👞</span>
+                        </div>
+                    </div>
+                    <div class="product-info p-3">
+                        <h5 class="product-name">Оксфорды Classic</h5>
+                        <p class="product-category">Мужские туфли</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="product-price">9 990 ₽</span>
+                            <button class="btn btn-cart">В корзину</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 5 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="placeholder-img">
+                            <span>👟</span>
+                        </div>
+                        <span class="badge-new">Хит</span>
+                    </div>
+                    <div class="product-info p-3">
+                        <h5 class="product-name">Кеды Urban Style</h5>
+                        <p class="product-category">Унисекс кеды</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="product-price">5 490 ₽</span>
+                            <button class="btn btn-cart">В корзину</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 6 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="placeholder-img">
+                            <span>🥿</span>
+                        </div>
+                    </div>
+                    <div class="product-info p-3">
+                        <h5 class="product-name">Балетки Soft Step</h5>
+                        <p class="product-category">Женские балетки</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="product-price">4 290 ₽</span>
+                            <button class="btn btn-cart">В корзину</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 7 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="placeholder-img">
+                            <span>👢</span>
+                        </div>
+                        <span class="badge-sale">-15%</span>
+                    </div>
+                    <div class="product-info p-3">
+                        <h5 class="product-name">Ботинки Trekker Pro</h5>
+                        <p class="product-category">Мужские ботинки</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="product-price">11 890 ₽</span>
+                                <small class="text-muted text-decoration-line-through">13 990 ₽</small>
+                            </div>
+                            <button class="btn btn-cart">В корзину</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 8 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="placeholder-img">
+                            <span>👡</span>
+                        </div>
+                        <span class="badge-new">Новинка</span>
+                    </div>
+                    <div class="product-info p-3">
+                        <h5 class="product-name">Сандалии Summer Breeze</h5>
+                        <p class="product-category">Женские сандалии</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="product-price">3 990 ₽</span>
+                            <button class="btn btn-cart">В корзину</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5">
+            <button class="btn btn-outline-primary btn-lg">Показать все товары</button>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter-section py-5 bg-dark text-white">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h3 class="mb-3">Подпишитесь на рассылку</h3>
+                <p class="mb-4">Получайте информацию о скидках и новых коллекциях первыми!</p>
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <input type="email" class="form-control form-control-lg" placeholder="Ваш email">
+                            <button class="btn btn-primary btn-lg" type="button">Подписаться</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
