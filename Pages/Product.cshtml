@@ -51,7 +51,7 @@
 
             <!-- Size Selection -->
             <div class="mb-4">
-                <h5 class="fw-bold mb-3">Размер</h5>
+                <h5 class="fw-bold mb-3">Размер <span class="text-danger">*</span></h5>
                 <div class="d-flex flex-wrap gap-2" id="sizeSelector">
                     @foreach (var size in Model.Sizes)
                     {
@@ -60,7 +60,9 @@
                         </button>
                     }
                 </div>
-                <small class="text-danger mt-2 d-none" id="sizeError">Выберите размер</small>
+                <small class="text-danger mt-2 d-none" id="sizeError">
+                    <i class="bi bi-exclamation-circle me-1"></i>Пожалуйста, выберите размер
+                </small>
             </div>
 
             <!-- Product Characteristics -->
@@ -93,10 +95,13 @@
                 <button class="btn btn-primary btn-lg flex-grow-1" id="addToCartBtn" onclick="addToCartFromProduct()" style="padding: 14px 32px;">
                     <i class="bi bi-cart-plus me-2"></i>Добавить в корзину
                 </button>
-                <button class="btn btn-outline-danger btn-lg" id="favoriteBtn" onclick="toggleFavorite(this)" data-product="@Model.Name">
-                    <i class="bi bi-heart"></i>
+                <button class="btn btn-outline-danger btn-lg" id="addToFavBtn" onclick="addToFavoritesFromProduct()">
+                    <i class="bi bi-heart me-2"></i>В избранное
                 </button>
             </div>
+            <small class="text-danger mt-2 d-none" id="actionError">
+                <i class="bi bi-exclamation-circle me-1"></i>Сначала выберите размер
+            </small>
         </div>
     </div>
 
@@ -168,17 +173,24 @@
             btn.classList.add('active');
             selectedSize = btn.getAttribute('data-size');
             document.getElementById('sizeError').classList.add('d-none');
+            document.getElementById('actionError').classList.add('d-none');
         }
 
-        function addToCartFromProduct() {
+        function validateSize() {
             if (!selectedSize) {
                 document.getElementById('sizeError').classList.remove('d-none');
+                document.getElementById('actionError').classList.remove('d-none');
                 document.getElementById('sizeSelector').classList.add('shake');
                 setTimeout(function() {
                     document.getElementById('sizeSelector').classList.remove('shake');
                 }, 500);
-                return;
+                return false;
             }
+            return true;
+        }
+
+        function addToCartFromProduct() {
+            if (!validateSize()) return;
 
             var existingItem = null;
             for (var i = 0; i < cart.length; i++) {
@@ -199,7 +211,7 @@
             
             var btn = document.getElementById('addToCartBtn');
             var originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Добавлено!';
+            btn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Добавлено! (размер ' + selectedSize + ')';
             btn.classList.add('btn-success');
             setTimeout(function() {
                 btn.innerHTML = originalHTML;
@@ -207,25 +219,34 @@
             }, 2000);
         }
 
-        function toggleFavorite(btn) {
-            var productName = btn.getAttribute('data-product');
-            var icon = btn.querySelector('i');
-            var index = favorites.indexOf(productName);
-            
-            if (index > -1) {
-                favorites.splice(index, 1);
-                icon.classList.remove('bi-heart-fill');
-                icon.classList.add('bi-heart');
-                btn.classList.remove('active');
-            } else {
-                favorites.push(productName);
-                icon.classList.remove('bi-heart');
-                icon.classList.add('bi-heart-fill');
-                btn.classList.add('active');
+        function addToFavoritesFromProduct() {
+            if (!validateSize()) return;
+
+            var favItem = { name: productName, size: selectedSize, price: productPrice, emoji: '@Html.Raw(Model.Emoji)', category: '@Html.Raw(Model.Category)' };
+            var exists = false;
+            for (var i = 0; i < favorites.length; i++) {
+                if (favorites[i].name === productName && favorites[i].size === selectedSize) {
+                    exists = true;
+                    break;
+                }
             }
             
+            if (!exists) {
+                favorites.push(favItem);
+            }
             localStorage.setItem('favorites', JSON.stringify(favorites));
             updateFavoritesCount();
+            
+            var btn = document.getElementById('addToFavBtn');
+            var originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check-lg me-2"></i>В избранном!';
+            btn.classList.add('btn-success');
+            btn.classList.remove('btn-outline-danger');
+            setTimeout(function() {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-danger');
+            }, 2000);
         }
 
         function updateFavoritesCount() {
@@ -234,13 +255,6 @@
 
         $(document).ready(function() {
             updateFavoritesCount();
-            
-            var icon = document.getElementById('favoriteBtn').querySelector('i');
-            if (favorites.indexOf(productName) > -1) {
-                icon.classList.remove('bi-heart');
-                icon.classList.add('bi-heart-fill');
-                document.getElementById('favoriteBtn').classList.add('active');
-            }
         });
     </script>
 }

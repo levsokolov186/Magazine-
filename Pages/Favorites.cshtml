@@ -14,7 +14,7 @@
         <div class="empty-state" id="emptyFavoritesMessage">
             <i class="bi bi-heart" style="font-size: 5rem;"></i>
             <h3>В избранном пусто</h3>
-            <p class="mb-4">Нажмите на сердечко в каталоге, чтобы добавить товар</p>
+            <p class="mb-4">Выберите размер на странице товара и нажмите «В избранное»</p>
             <a href="/" class="btn btn-primary btn-lg">
                 <i class="bi bi-handbag me-2"></i>Перейти в каталог
             </a>
@@ -22,7 +22,6 @@
         
         <!-- Favorites content -->
         <div class="row g-4" id="favoritesContent" style="display: none;">
-            <!-- Will be rendered dynamically -->
         </div>
     </div>
 </div>
@@ -32,34 +31,22 @@
         var favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
         var cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-        var allProducts = [
-            { name: 'Туфли Elegance', category: 'Женские туфли', price: 6390, emoji: '👠' },
-            { name: 'Сапоги Winter Comfort', category: 'Женские сапоги', price: 9990, emoji: '👢' },
-            { name: 'Балетки Soft Step', category: 'Женские балетки', price: 4290, emoji: '🥿' },
-            { name: 'Сандалии Summer Breeze', category: 'Женские сандалии', price: 3990, emoji: '👡' },
-            { name: 'Ботильоны Chelsea', category: 'Женские ботильоны', price: 8490, emoji: '👢' },
-            { name: 'Кроссовки Lady Sport', category: 'Женские кроссовки', price: 7490, emoji: '👟' },
-            { name: 'Лоферы Classic', category: 'Женские лоферы', price: 5990, emoji: '👠' },
-            { name: 'Сапоги-трубы Luxe', category: 'Женские сапоги', price: 14990, emoji: '👢' }
-        ];
-
         function formatPrice(price) {
             return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
         }
 
-        function openProductFromFavorites(name, category, price, emoji) {
+        function openProductFromFavorites(name, price, emoji) {
             var url = '/Product?name=' + encodeURIComponent(name) + 
-                      '&category=' + encodeURIComponent(category) + 
                       '&price=' + price + 
                       '&emoji=' + encodeURIComponent(emoji) +
                       '&badge=Новинка';
             window.location.href = url;
         }
 
-        function addToCartFromFavorites(name, price) {
+        function addToCartFromFavorites(name, price, size) {
             var existingItem = null;
             for (var i = 0; i < cart.length; i++) {
-                if (cart[i].name === name) {
+                if (cart[i].name === name && cart[i].size === size) {
                     existingItem = cart[i];
                     break;
                 }
@@ -67,23 +54,28 @@
             if (existingItem) {
                 existingItem.quantity++;
             } else {
-                cart.push({ name: name, price: price, quantity: 1 });
+                cart.push({ name: name, price: price, size: size, quantity: 1 });
             }
             localStorage.setItem('cart', JSON.stringify(cart));
             
             var count = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
             $('#cartCount').text(count);
             
-            showToast(name + ' добавлен в корзину!');
+            showToast(name + ' (размер ' + size + ') добавлен в корзину!');
         }
 
-        function removeFromFavorites(name) {
-            var index = favorites.indexOf(name);
-            if (index > -1) {
-                favorites.splice(index, 1);
-            }
+        function removeFromFavorites(index) {
+            favorites.splice(index, 1);
             localStorage.setItem('favorites', JSON.stringify(favorites));
             renderFavorites();
+        }
+
+        function clearAllFavorites() {
+            if (confirm('Удалить всё из избранного?')) {
+                favorites = [];
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                renderFavorites();
+            }
         }
 
         function showToast(message) {
@@ -116,36 +108,39 @@
             favoritesContent.style.display = 'flex';
             $('#favoritesCount').text(favorites.length);
             
+            // Group by product name
+            var grouped = {};
+            for (var i = 0; i < favorites.length; i++) {
+                var item = favorites[i];
+                if (!grouped[item.name]) {
+                    grouped[item.name] = { items: [], emoji: item.emoji || '👠' };
+                }
+                grouped[item.name].items.push({ size: item.size, index: i, price: item.price });
+            }
+            
             favoritesContent.innerHTML = '';
             
-            for (var i = 0; i < favorites.length; i++) {
-                var favName = favorites[i];
-                var product = null;
-                for (var j = 0; j < allProducts.length; j++) {
-                    if (allProducts[j].name === favName) {
-                        product = allProducts[j];
-                        break;
-                    }
-                }
+            for (var name in grouped) {
+                var group = grouped[name];
+                var sizes = group.items.map(function(item) { return item.size; }).sort().join(', ');
+                var firstItem = group.items[0];
                 
-                if (!product) continue;
-                
-                var itemHtml = '<div class="col-md-4 col-lg-3">' +
-                    '<div class="product-card" onclick="openProductFromFavorites(\'' + product.name.replace(/'/g, "\\'") + '\', \'' + product.category + '\', ' + product.price + ', \'' + product.emoji + '\')">' +
+                var itemHtml = '<div class="col-md-6 col-lg-4">' +
+                    '<div class="product-card" onclick="openProductFromFavorites(\'' + name.replace(/'/g, "\\'") + '\', ' + firstItem.price + ', \'' + group.emoji + '\')">' +
                         '<div class="product-image">' +
                             '<div class="placeholder-img">' +
-                                '<span>' + product.emoji + '</span>' +
+                                '<span>' + group.emoji + '</span>' +
                             '</div>' +
-                            '<button class="btn-favorite active" onclick="event.stopPropagation(); removeFromFavorites(\'' + product.name.replace(/'/g, "\\'") + '\')">' +
-                                '<i class="bi bi-heart-fill"></i>' +
+                            '<button class="btn-favorite-remove" onclick="event.stopPropagation(); removeFromFavorites(' + firstItem.index + ')" title="Удалить">' +
+                                '<i class="bi bi-x-lg"></i>' +
                             '</button>' +
                         '</div>' +
                         '<div class="product-info">' +
-                            '<h5 class="product-name">' + product.name + '</h5>' +
-                            '<p class="product-category">' + product.category + '</p>' +
+                            '<h5 class="product-name">' + name + '</h5>' +
+                            '<p class="product-category">Размеры: <strong>' + sizes + '</strong></p>' +
                             '<div class="d-flex justify-content-between align-items-center mt-auto">' +
-                                '<span class="product-price">' + formatPrice(product.price) + '</span>' +
-                                '<button class="btn btn-cart" onclick="event.stopPropagation(); addToCartFromFavorites(\'' + product.name.replace(/'/g, "\\'") + '\', ' + product.price + ')">' +
+                                '<span class="product-price">' + formatPrice(firstItem.price) + '</span>' +
+                                '<button class="btn btn-cart" onclick="event.stopPropagation(); addToCartFromFavorites(\'' + name.replace(/'/g, "\\'") + '\', ' + firstItem.price + ', \'' + firstItem.size + '\')">' +
                                     '<i class="bi bi-cart-plus"></i> В корзину' +
                                 '</button>' +
                             '</div>' +

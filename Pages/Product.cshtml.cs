@@ -30,7 +30,6 @@ namespace ShoesStore.Pages
 
         public void OnGet()
         {
-            // Данные о товаре на основе имени
             var products = new Dictionary<string, dynamic>
             {
                 ["Туфли Elegance"] = new { Material = "Натуральная кожа", Color = "Чёрный", Condition = "Новое", Sizes = new List<string> { "35", "36", "37", "38", "39", "40" } },
