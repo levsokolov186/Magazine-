@@ -1,8 +1,14 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "dgSpecHash": "wzWh6Nn20II=",
   "success": true,
   "projectFilePath": "C:\\Users\\Е.Калмыков\\Desktop\\project\\Magazine-\\ShoesStore.csproj",
+=======
+  "dgSpecHash": "X8tk9bTIW5w=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\sokol\\Desktop\\Git\\Magazine-\\ShoesStore.csproj",
+>>>>>>> origin/Lev
   "expectedPackageFiles": [],
   "logs": []
 }

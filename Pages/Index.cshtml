@@ -1,10 +1,228 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "StepStyle — Женская обувь";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Коллекция 2026</h1>
+        <p class="hero-subtitle">Стильная и комфортная обувь для настоящих леди</p>
+        <a href="#products" class="btn btn-hero">
+            <i class="bi bi-arrow-down-circle me-2"></i>Смотреть каталог
+        </a>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section id="products" class="products-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Каталог</h2>
+        </div>
+        <div class="row g-4">
+            <!-- Product 1 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card" onclick="openProduct('Туфли Elegance', 'Женские туфли', 6390, '👠')">
+                    <div class="product-image">
+                        <div class="placeholder-img"><span>👠</span></div>
+                        <span class="badge-new">Новинка</span>
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-name">Туфли Elegance</h5>
+                        <p class="product-category">Женские туфли</p>
+                        <p class="product-hint text-muted mb-2"><small><i class="bi bi-hand-index me-1"></i>Нажмите, чтобы выбрать размер</small></p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <span class="product-price">6 390 ₽</span>
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); quickAddToCart(this, 'Туфли Elegance', 6390)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 2 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card" onclick="openProduct('Сапоги Winter Comfort', 'Женские сапоги', 9990, '👢', 12490)">
+                    <div class="product-image">
+                        <div class="placeholder-img"><span>👢</span></div>
+                        <span class="badge-sale">-20%</span>
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-name">Сапоги Winter Comfort</h5>
+                        <p class="product-category">Женские сапоги</p>
+                        <p class="product-hint text-muted mb-2"><small><i class="bi bi-hand-index me-1"></i>Нажмите, чтобы выбрать размер</small></p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <div>
+                                <span class="product-price">9 990 ₽</span>
+                                <br><small class="text-muted text-decoration-line-through">12 490 ₽</small>
+                            </div>
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); quickAddToCart(this, 'Сапоги Winter Comfort', 9990)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 3 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card" onclick="openProduct('Балетки Soft Step', 'Женские балетки', 4290, '🥿')">
+                    <div class="product-image">
+                        <div class="placeholder-img"><span>🥿</span></div>
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-name">Балетки Soft Step</h5>
+                        <p class="product-category">Женские балетки</p>
+                        <p class="product-hint text-muted mb-2"><small><i class="bi bi-hand-index me-1"></i>Нажмите, чтобы выбрать размер</small></p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <span class="product-price">4 290 ₽</span>
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); quickAddToCart(this, 'Балетки Soft Step', 4290)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 4 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card" onclick="openProduct('Сандалии Summer Breeze', 'Женские сандалии', 3990, '👡')">
+                    <div class="product-image">
+                        <div class="placeholder-img"><span>👡</span></div>
+                        <span class="badge-new">Новинка</span>
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-name">Сандалии Summer Breeze</h5>
+                        <p class="product-category">Женские сандалии</p>
+                        <p class="product-hint text-muted mb-2"><small><i class="bi bi-hand-index me-1"></i>Нажмите, чтобы выбрать размер</small></p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <span class="product-price">3 990 ₽</span>
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); quickAddToCart(this, 'Сандалии Summer Breeze', 3990)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 5 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card" onclick="openProduct('Ботильоны Chelsea', 'Женские ботильоны', 8490, '👢', 9990)">
+                    <div class="product-image">
+                        <div class="placeholder-img"><span>👢</span></div>
+                        <span class="badge-sale">-15%</span>
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-name">Ботильоны Chelsea</h5>
+                        <p class="product-category">Женские ботильоны</p>
+                        <p class="product-hint text-muted mb-2"><small><i class="bi bi-hand-index me-1"></i>Нажмите, чтобы выбрать размер</small></p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <div>
+                                <span class="product-price">8 490 ₽</span>
+                                <br><small class="text-muted text-decoration-line-through">9 990 ₽</small>
+                            </div>
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); quickAddToCart(this, 'Ботильоны Chelsea', 8490)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 6 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card" onclick="openProduct('Кроссовки Lady Sport', 'Женские кроссовки', 7490, '👟')">
+                    <div class="product-image">
+                        <div class="placeholder-img"><span>👟</span></div>
+                        <span class="badge-new">Хит</span>
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-name">Кроссовки Lady Sport</h5>
+                        <p class="product-category">Женские кроссовки</p>
+                        <p class="product-hint text-muted mb-2"><small><i class="bi bi-hand-index me-1"></i>Нажмите, чтобы выбрать размер</small></p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <span class="product-price">7 490 ₽</span>
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); quickAddToCart(this, 'Кроссовки Lady Sport', 7490)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 7 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card" onclick="openProduct('Лоферы Classic', 'Женские лоферы', 5990, '👠')">
+                    <div class="product-image">
+                        <div class="placeholder-img"><span>👠</span></div>
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-name">Лоферы Classic</h5>
+                        <p class="product-category">Женские лоферы</p>
+                        <p class="product-hint text-muted mb-2"><small><i class="bi bi-hand-index me-1"></i>Нажмите, чтобы выбрать размер</small></p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <span class="product-price">5 990 ₽</span>
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); quickAddToCart(this, 'Лоферы Classic', 5990)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product 8 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="product-card" onclick="openProduct('Сапоги-трубы Luxe', 'Женские сапоги', 14990, '👢')">
+                    <div class="product-image">
+                        <div class="placeholder-img"><span>👢</span></div>
+                        <span class="badge-new">Премиум</span>
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-name">Сапоги-трубы Luxe</h5>
+                        <p class="product-category">Женские сапоги</p>
+                        <p class="product-hint text-muted mb-2"><small><i class="bi bi-hand-index me-1"></i>Нажмите, чтобы выбрать размер</small></p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <span class="product-price">14 990 ₽</span>
+                            <button class="btn btn-cart" onclick="event.stopPropagation(); quickAddToCart(this, 'Сапоги-трубы Luxe', 14990)">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        function openProduct(name, category, price, emoji, oldPrice) {
+            var url = '/Product?name=' + encodeURIComponent(name) + 
+                      '&category=' + encodeURIComponent(category) + 
+                      '&price=' + price + 
+                      '&emoji=' + encodeURIComponent(emoji);
+            if (oldPrice) {
+                url += '&oldPrice=' + oldPrice + '&badge=-' + Math.round((1 - price / oldPrice) * 100) + '%';
+            } else {
+                url += '&badge=Новинка';
+            }
+            window.location.href = url;
+        }
+
+        function quickAddToCart(btn, name, price) {
+            // Быстрое добавление — перенаправляем на страницу товара для выбора размера
+            var card = btn.closest('.product-card');
+            card.click();
+        }
+
+        // Update nav counts on index page too
+        $(document).ready(function() {
+            if (typeof updateNavCounts === 'function') {
+                updateNavCounts();
+            }
+        });
+    </script>
+}

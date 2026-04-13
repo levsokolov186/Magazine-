@@ -1,0 +1,186 @@
+@page
+@model CartModel
+@{
+    ViewData["Title"] = "Корзина — StepStyle";
+}
+
+<div class="container py-5">
+    <div class="page-header">
+        <h1><i class="bi bi-cart-fill"></i> Корзина</h1>
+    </div>
+    
+    <div id="cartContainer">
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyCartMessage">
+            <i class="bi bi-cart-x" style="font-size: 5rem;"></i>
+            <h3>Корзина пуста</h3>
+            <p class="mb-4">Добавьте товары из каталога</p>
+            <a href="/" class="btn btn-primary btn-lg">
+                <i class="bi bi-handbag me-2"></i>Перейти в каталог
+            </a>
+        </div>
+        
+        <!-- Cart content -->
+        <div class="row g-4" id="cartContent" style="display: none;">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body p-4" id="cartList">
+                        <!-- Cart items will be rendered here -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card sticky-top" style="top: 1rem; z-index: 100;">
+                    <div class="card-body p-4">
+                        <h4 class="card-title">Итого</h4>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Товаров:</span>
+                            <span class="fw-bold" id="totalItems">0 шт.</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-4 p-3 rounded-3" style="background: var(--bg-body);">
+                            <span class="fs-5 fw-bold">Сумма:</span>
+                            <span class="fs-4 fw-bold" style="color: var(--bg-btn-primary);" id="totalPrice">0 ₽</span>
+                        </div>
+                        <button class="btn btn-primary w-100 btn-lg mb-3" onclick="checkout()">
+                            <i class="bi bi-bag-check me-2"></i>Оформить заказ
+                        </button>
+                        <button class="btn btn-outline-secondary w-100" onclick="clearCart()">
+                            <i class="bi bi-trash me-2"></i>Очистить корзину
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        var productEmojis = {
+            'Туфли Elegance': '👠',
+            'Сапоги Winter Comfort': '👢',
+            'Балетки Soft Step': '🥿',
+            'Сандалии Summer Breeze': '👡',
+            'Ботильоны Chelsea': '👢',
+            'Кроссовки Lady Sport': '👟',
+            'Лоферы Classic': '👠',
+            'Сапоги-трубы Luxe': '👢'
+        };
+
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+        }
+
+        function openProductFromCart(name, price) {
+            var emoji = productEmojis[name] || '👠';
+            var url = '/Product?name=' + encodeURIComponent(name) + 
+                      '&price=' + price + 
+                      '&emoji=' + encodeURIComponent(emoji) +
+                      '&badge=Новинка';
+            window.location.href = url;
+        }
+
+        function renderCart() {
+            var cartList = document.getElementById('cartList');
+            var emptyMessage = document.getElementById('emptyCartMessage');
+            var cartContent = document.getElementById('cartContent');
+            
+            if (cart.length === 0) {
+                emptyMessage.style.display = 'block';
+                cartContent.style.display = 'none';
+                return;
+            }
+            
+            emptyMessage.style.display = 'none';
+            cartContent.style.display = 'flex';
+            
+            cartList.innerHTML = '';
+            var totalItems = 0;
+            var totalPrice = 0;
+            
+            for (var i = 0; i < cart.length; i++) {
+                var item = cart[i];
+                var itemTotal = item.price * item.quantity;
+                totalItems += item.quantity;
+                totalPrice += itemTotal;
+                
+                var emoji = productEmojis[item.name] || '👠';
+                var sizeInfo = item.size ? '<p class="text-muted mb-0">Размер: <strong>' + item.size + '</strong></p>' : '<p class="text-muted mb-0">Размер не указан</p>';
+                
+                var itemHtml = '<div class="cart-item" style="cursor: pointer;" onclick="openProductFromCart(\'' + item.name.replace(/'/g, "\\'") + '\', ' + item.price + ')">' +
+                    '<div class="row align-items-center g-3">' +
+                        '<div class="col-auto">' +
+                            '<div class="cart-item-icon rounded-3 d-flex align-items-center justify-content-center" ' +
+                                'style="width: 90px; height: 90px; font-size: 3rem;">' + emoji + '</div>' +
+                        '</div>' +
+                        '<div class="col">' +
+                            '<h5 class="mb-1 fw-bold">' + item.name + '</h5>' +
+                            sizeInfo +
+                        '</div>' +
+                        '<div class="col-auto text-center">' +
+                            '<div class="quantity-control mb-2">' +
+                                '<button onclick="event.stopPropagation(); changeQuantity(' + i + ', -1)">−</button>' +
+                                '<span>' + item.quantity + '</span>' +
+                                '<button onclick="event.stopPropagation(); changeQuantity(' + i + ', 1)">+</button>' +
+                            '</div>' +
+                            '<p class="fw-bold mb-1 fs-5">' + formatPrice(itemTotal) + '</p>' +
+                        '</div>' +
+                        '<div class="col-auto">' +
+                            '<button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeItem(' + i + ')" title="Удалить">' +
+                                '<i class="bi bi-trash"></i>' +
+                            '</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+                
+                if (i < cart.length - 1) {
+                    itemHtml += '<hr class="my-3">';
+                }
+                
+                cartList.innerHTML += itemHtml;
+            }
+            
+            document.getElementById('totalItems').textContent = totalItems + ' шт.';
+            document.getElementById('totalPrice').textContent = formatPrice(totalPrice);
+            updateNavCounts();
+        }
+
+        function changeQuantity(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+            updateNavCounts();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+            updateNavCounts();
+        }
+
+        function clearCart() {
+            if (confirm('Очистить корзину?')) {
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCart();
+            }
+        }
+
+        function checkout() {
+            alert('Спасибо за заказ! Сумма: ' + document.getElementById('totalPrice').textContent);
+            cart = [];
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        $(document).ready(function() {
+            renderCart();
+        });
+    </script>
+}
