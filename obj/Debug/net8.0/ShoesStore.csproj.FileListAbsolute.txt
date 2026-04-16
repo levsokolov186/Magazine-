@@ -261,4 +261,5 @@ C:\Users\Е.Калмыков\Desktop\project\Magazine-\obj\Debug\net8.0\refint\S
 C:\Users\Е.Калмыков\Desktop\project\Magazine-\obj\Debug\net8.0\ShoesStore.pdb
 C:\Users\Е.Калмыков\Desktop\project\Magazine-\obj\Debug\net8.0\ShoesStore.genruntimeconfig.cache
 C:\Users\Е.Калмыков\Desktop\project\Magazine-\obj\Debug\net8.0\ref\ShoesStore.dll
+C:\Users\Е.Калмыков\Desktop\project\Magazine-\bin\Debug\net8.0\data.json
 C:\Users\Е.Калмыков\Desktop\project\Magazine-\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

@@ -17,25 +17,10 @@ namespace ShoesStore.Services
         IUserLockoutStore<ApplicationUser>
     {
         private readonly JsonDatabaseService _db;
-        private IPasswordHasher<ApplicationUser>? _passwordHasher;
 
         public JsonUserStore(JsonDatabaseService db)
         {
             _db = db;
-        }
-
-        public void SetPasswordHasher(IPasswordHasher<ApplicationUser> passwordHasher)
-        {
-            _passwordHasher = passwordHasher;
-        }
-
-        public PasswordVerificationResult VerifyPasswordHash(ApplicationUser user, string password)
-        {
-            if (_passwordHasher == null || string.IsNullOrEmpty(user.PasswordHash))
-            {
-                return PasswordVerificationResult.Failed;
-            }
-            return _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
         }
 
         public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)

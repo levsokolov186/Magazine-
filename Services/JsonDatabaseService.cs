@@ -8,8 +8,7 @@ namespace ShoesStore.Services
     public class JsonDatabaseService
     {
         private readonly string _dataFilePath;
-        private ApplicationDbData _data;
-        private readonly object _lock = new object();
+        private ApplicationDbData _data = null!;
         private IPasswordHasher<ApplicationUser>? _passwordHasher;
 
         public JsonDatabaseService(string dataFilePath)

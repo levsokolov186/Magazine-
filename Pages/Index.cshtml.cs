@@ -15,7 +15,7 @@ namespace ShoesStore.Pages
 
         public IList<Product> Products { get; set; } = new List<Product>();
 
-        public async Task OnGetAsync()
+        public void OnGet()
         {
             Products = _dbService.Products
                 .OrderBy(p => p.Name)
