@@ -58,30 +58,6 @@
     <script>
         var cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-        var productEmojis = {
-            'Туфли Elegance': '👠',
-            'Сапоги Winter Comfort': '👢',
-            'Балетки Soft Step': '🥿',
-            'Сандалии Summer Breeze': '👡',
-            'Ботильоны Chelsea': '👢',
-            'Кроссовки Lady Sport': '👟',
-            'Лоферы Classic': '👠',
-            'Сапоги-трубы Luxe': '👢'
-        };
-
-        function formatPrice(price) {
-            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
-        }
-
-        function openProductFromCart(name, price) {
-            var emoji = productEmojis[name] || '👠';
-            var url = '/Product?name=' + encodeURIComponent(name) + 
-                      '&price=' + price + 
-                      '&emoji=' + encodeURIComponent(emoji) +
-                      '&badge=Новинка';
-            window.location.href = url;
-        }
-
         function renderCart() {
             var cartList = document.getElementById('cartList');
             var emptyMessage = document.getElementById('emptyCartMessage');
@@ -108,8 +84,8 @@
                 
                 var emoji = productEmojis[item.name] || '👠';
                 var sizeInfo = item.size ? '<p class="text-muted mb-0">Размер: <strong>' + item.size + '</strong></p>' : '<p class="text-muted mb-0">Размер не указан</p>';
-                
-                var itemHtml = '<div class="cart-item" style="cursor: pointer;" onclick="openProductFromCart(\'' + item.name.replace(/'/g, "\\'") + '\', ' + item.price + ')">' +
+
+                var itemHtml = '<div class="cart-item" style="cursor: pointer;" onclick="navigateToProduct(\'' + item.name.replace(/'/g, "\\'") + '\', ' + item.price + ', ' + emoji + ', \'Новинка\')">' +
                     '<div class="row align-items-center g-3">' +
                         '<div class="col-auto">' +
                             '<div class="cart-item-icon rounded-3 d-flex align-items-center justify-content-center" ' +
@@ -154,14 +130,12 @@
             }
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
-            updateNavCounts();
         }
 
         function removeItem(index) {
             cart.splice(index, 1);
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
-            updateNavCounts();
         }
 
         function clearCart() {

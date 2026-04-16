@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8" />
@@ -41,6 +41,42 @@
                         </li>
                     </ul>
                     <ul class="navbar-nav align-items-center">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-page="/Admin/Index">
+                                        <i class="bi bi-gear-fill"></i> Админ-панель
+                                    </a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <span class="nav-link text-muted">
+                                    <i class="bi bi-person-circle"></i> @User.Identity.Name
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <form method="post" asp-page="/Identity/Account/Logout" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm nav-link">
+                                        <i class="bi bi-box-arrow-right"></i> Выйти
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Identity/Account/Login">
+                                    <i class="bi bi-box-arrow-in-right"></i> Войти
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Identity/Account/Register">
+                                    <i class="bi bi-person-plus"></i> Регистрация
+                                </a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <button class="btn-theme-toggle" id="themeToggle" title="Переключить тему">
                                 <i class="bi bi-moon-fill" id="themeIcon"></i>
@@ -67,58 +103,11 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/shared.js" asp-append-version="true"></script>
+    <script src="~/js/theme.js" asp-append-version="true"></script>
+    <script src="~/js/cart.js" asp-append-version="true"></script>
+    <script src="~/js/favorites.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    
-    <script>
-        // Update counts on every page load
-        function updateNavCounts() {
-            var cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            var favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-            
-            var cartCount = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
-            $('#cartCount').text(cartCount);
-            $('#favoritesCount').text(favorites.length);
-        }
-        
-        // Theme toggle
-        (function() {
-            var currentTheme = localStorage.getItem('theme') || 'light';
-            var html = document.documentElement;
-            var icon = document.getElementById('themeIcon');
-            
-            if (currentTheme === 'dark') {
-                html.setAttribute('data-theme', 'dark');
-                if (icon) {
-                    icon.classList.remove('bi-moon-fill');
-                    icon.classList.add('bi-sun-fill');
-                }
-            }
-            
-            var toggle = document.getElementById('themeToggle');
-            if (toggle) {
-                toggle.addEventListener('click', function() {
-                    var theme = html.getAttribute('data-theme');
-                    if (theme === 'dark') {
-                        html.removeAttribute('data-theme');
-                        localStorage.setItem('theme', 'light');
-                        if (icon) {
-                            icon.classList.remove('bi-sun-fill');
-                            icon.classList.add('bi-moon-fill');
-                        }
-                    } else {
-                        html.setAttribute('data-theme', 'dark');
-                        localStorage.setItem('theme', 'dark');
-                        if (icon) {
-                            icon.classList.remove('bi-moon-fill');
-                            icon.classList.add('bi-sun-fill');
-                        }
-                    }
-                });
-            }
-            
-            updateNavCounts();
-        })();
-    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
