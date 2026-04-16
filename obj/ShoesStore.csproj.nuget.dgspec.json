@@ -1,7 +1,6 @@
 {
   "format": 1,
   "restore": {
-<<<<<<< HEAD
     "C:\\Users\\Е.Калмыков\\Desktop\\project\\Magazine-\\ShoesStore.csproj": {}
   },
   "projects": {
@@ -13,29 +12,12 @@
         "projectPath": "C:\\Users\\Е.Калмыков\\Desktop\\project\\Magazine-\\ShoesStore.csproj",
         "packagesPath": "C:\\Users\\Е.Калмыков\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Е.Калмыков\\Desktop\\project\\Magazine-\\obj\\",
-=======
-    "C:\\Users\\sokol\\Desktop\\Git\\Magazine-\\ShoesStore.csproj": {}
-  },
-  "projects": {
-    "C:\\Users\\sokol\\Desktop\\Git\\Magazine-\\ShoesStore.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "C:\\Users\\sokol\\Desktop\\Git\\Magazine-\\ShoesStore.csproj",
-        "projectName": "ShoesStore",
-        "projectPath": "C:\\Users\\sokol\\Desktop\\Git\\Magazine-\\ShoesStore.csproj",
-        "packagesPath": "C:\\Users\\sokol\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\sokol\\Desktop\\Git\\Magazine-\\obj\\",
->>>>>>> origin/Lev
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "E:\\общие компоненты, инструменты и пакеты SDK Visual studio\\NuGetPackages"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-<<<<<<< HEAD
           "C:\\Users\\Е.Калмыков\\AppData\\Roaming\\NuGet\\NuGet.Config",
-=======
-          "C:\\Users\\sokol\\AppData\\Roaming\\NuGet\\NuGet.Config",
->>>>>>> origin/Lev
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -44,7 +26,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -63,11 +44,31 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.200"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -87,7 +88,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

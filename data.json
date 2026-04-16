@@ -1,0 +1,57 @@
+{
+  "Products": [],
+  "ProductSizes": [],
+  "Users": [
+    {
+      "Id": "869f8c51-a3ff-4662-be77-2dab76073439",
+      "UserName": "admin@stepstyle.ru",
+      "NormalizedUserName": "ADMIN@STEPSTYLE.RU",
+      "Email": "admin@stepstyle.ru",
+      "NormalizedEmail": "ADMIN@STEPSTYLE.RU",
+      "EmailConfirmed": true,
+      "PasswordHash": "AQAAAAIAAYagAAAAEB48ghnBQh21dmyKB6xg9divleesrN3wPmG9kzvb3Vc7fn8/9S1Q1p6hd4LiaSHOUg==",
+      "SecurityStamp": "aa79d880-f0bf-422e-8ba1-6f8842fce38b",
+      "ConcurrencyStamp": "19b91a34-2f9d-40d3-9787-17c1b62ec709",
+      "PhoneNumber": null,
+      "PhoneNumberConfirmed": false,
+      "TwoFactorEnabled": false,
+      "LockoutEnd": null,
+      "LockoutEnabled": false,
+      "AccessFailedCount": 0
+    },
+    {
+      "Id": "acc368e0-3c5b-4799-8221-e0ebaeb0f45a",
+      "UserName": "user@stepstyle.ru",
+      "NormalizedUserName": "USER@STEPSTYLE.RU",
+      "Email": "user@stepstyle.ru",
+      "NormalizedEmail": "USER@STEPSTYLE.RU",
+      "EmailConfirmed": true,
+      "PasswordHash": "AQAAAAIAAYagAAAAEMFYErTXVdttsz/sH716PFkPSJcytYlqlB2\u002BJ6U5SnQh4j83rnljAnPdS7\u002BwLLHWVQ==",
+      "SecurityStamp": "3be6da1f-42bf-45c6-ae63-fa002329c44e",
+      "ConcurrencyStamp": "6cff03a1-d0e6-4dd3-824d-1ef311e15c8e",
+      "PhoneNumber": null,
+      "PhoneNumberConfirmed": false,
+      "TwoFactorEnabled": false,
+      "LockoutEnd": null,
+      "LockoutEnabled": false,
+      "AccessFailedCount": 0
+    }
+  ],
+  "Roles": [
+    {
+      "Id": "6a1aca84-eb49-4106-b208-714b125d24da",
+      "Name": "Admin",
+      "NormalizedName": null,
+      "ConcurrencyStamp": null
+    },
+    {
+      "Id": "f0bde89c-b46e-4fda-8b76-55771e3a16f9",
+      "Name": "User",
+      "NormalizedName": null,
+      "ConcurrencyStamp": null
+    }
+  ],
+  "UserRoles": [
+    "admin@stepstyle.ru|Admin"
+  ]
+}
