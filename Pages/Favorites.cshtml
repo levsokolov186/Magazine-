@@ -1,0 +1,159 @@
+@page
+@model FavoritesModel
+@{
+    ViewData["Title"] = "Избранное — StepStyle";
+}
+
+<div class="container py-5">
+    <div class="page-header">
+        <h1><i class="bi bi-heart-fill"></i> Избранное</h1>
+    </div>
+    
+    <div id="favoritesContainer">
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyFavoritesMessage">
+            <i class="bi bi-heart" style="font-size: 5rem;"></i>
+            <h3>В избранном пусто</h3>
+            <p class="mb-4">Выберите размер на странице товара и нажмите «В избранное»</p>
+            <a href="/" class="btn btn-primary btn-lg">
+                <i class="bi bi-handbag me-2"></i>Перейти в каталог
+            </a>
+        </div>
+        
+        <!-- Favorites content -->
+        <div class="row g-4" id="favoritesContent" style="display: none;">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        var cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+        }
+
+        function openProductFromFavorites(name, price, emoji) {
+            var url = '/Product?name=' + encodeURIComponent(name) + 
+                      '&price=' + price + 
+                      '&emoji=' + encodeURIComponent(emoji) +
+                      '&badge=Новинка';
+            window.location.href = url;
+        }
+
+        function addToCartFromFavorites(name, price, size) {
+            var existingItem = null;
+            for (var i = 0; i < cart.length; i++) {
+                if (cart[i].name === name && cart[i].size === size) {
+                    existingItem = cart[i];
+                    break;
+                }
+            }
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ name: name, price: price, size: size, quantity: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            updateNavCounts();
+
+            showToast(name + ' (размер ' + size + ') добавлен в корзину!');
+        }
+
+        function removeFromFavorites(index) {
+            favorites.splice(index, 1);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            renderFavorites();
+            updateNavCounts();
+        }
+
+        function clearAllFavorites() {
+            if (confirm('Удалить всё из избранного?')) {
+                favorites = [];
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                renderFavorites();
+            }
+        }
+
+        function showToast(message) {
+            var toast = $('<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">' +
+                '<div class="toast show" role="alert" style="background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-primary);">' +
+                    '<div class="toast-body">' +
+                        '<i class="bi bi-check-circle-fill text-success me-2"></i>' + message +
+                    '</div>' +
+                '</div>' +
+            '</div>');
+            
+            $('body').append(toast);
+            setTimeout(function() {
+                toast.fadeOut(300, function() { $(this).remove(); });
+            }, 2500);
+        }
+
+        function renderFavorites() {
+            var emptyMessage = document.getElementById('emptyFavoritesMessage');
+            var favoritesContent = document.getElementById('favoritesContent');
+            
+            if (favorites.length === 0) {
+                emptyMessage.style.display = 'block';
+                favoritesContent.style.display = 'none';
+                updateNavCounts();
+                return;
+            }
+
+            emptyMessage.style.display = 'none';
+            favoritesContent.style.display = 'flex';
+            updateNavCounts();
+            
+            // Group by product name
+            var grouped = {};
+            for (var i = 0; i < favorites.length; i++) {
+                var item = favorites[i];
+                if (!grouped[item.name]) {
+                    grouped[item.name] = { items: [], emoji: item.emoji || '👠' };
+                }
+                grouped[item.name].items.push({ size: item.size, index: i, price: item.price });
+            }
+            
+            favoritesContent.innerHTML = '';
+            
+            for (var name in grouped) {
+                var group = grouped[name];
+                var sizes = group.items.map(function(item) { return item.size; }).sort().join(', ');
+                var firstItem = group.items[0];
+                
+                var itemHtml = '<div class="col-md-6 col-lg-4">' +
+                    '<div class="product-card" onclick="openProductFromFavorites(\'' + name.replace(/'/g, "\\'") + '\', ' + firstItem.price + ', \'' + group.emoji + '\')">' +
+                        '<div class="product-image">' +
+                            '<div class="placeholder-img">' +
+                                '<span>' + group.emoji + '</span>' +
+                            '</div>' +
+                            '<button class="btn-favorite-remove" onclick="event.stopPropagation(); removeFromFavorites(' + firstItem.index + ')" title="Удалить">' +
+                                '<i class="bi bi-x-lg"></i>' +
+                            '</button>' +
+                        '</div>' +
+                        '<div class="product-info">' +
+                            '<h5 class="product-name">' + name + '</h5>' +
+                            '<p class="product-category">Размеры: <strong>' + sizes + '</strong></p>' +
+                            '<div class="d-flex justify-content-between align-items-center mt-auto">' +
+                                '<span class="product-price">' + formatPrice(firstItem.price) + '</span>' +
+                                '<button class="btn btn-cart" onclick="event.stopPropagation(); addToCartFromFavorites(\'' + name.replace(/'/g, "\\'") + '\', ' + firstItem.price + ', \'' + firstItem.size + '\')">' +
+                                    '<i class="bi bi-cart-plus"></i> В корзину' +
+                                '</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+                
+                favoritesContent.innerHTML += itemHtml;
+            }
+        }
+
+        $(document).ready(function() {
+            renderFavorites();
+        });
+    </script>
+}

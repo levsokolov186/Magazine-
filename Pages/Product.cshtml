@@ -1,0 +1,240 @@
+@page
+@model ProductModel
+@{
+    ViewData["Title"] = Model.Name + " — StepStyle";
+}
+
+<div class="container py-5">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Каталог</a></li>
+            <li class="breadcrumb-item"><a href="#">@Model.Category</a></li>
+            <li class="breadcrumb-item active">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Product Image -->
+        <div class="col-lg-6">
+            <div class="product-detail-image rounded-4 d-flex align-items-center justify-content-center" style="height: 500px; background: var(--bg-product-img);">
+                <span style="font-size: 12rem; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.2));">@Model.Emoji</span>
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-lg-6">
+            @if (!string.IsNullOrEmpty(Model.Badge))
+            {
+                <span class="badge @(Model.Badge.Contains("-") ? "bg-danger" : "bg-success") mb-3 px-3 py-2 fs-6">@Model.Badge</span>
+            }
+
+            <h1 class="fw-bold mb-2">@Model.Name</h1>
+            <p class="text-muted fs-5 mb-4">@Model.Category</p>
+
+            <div class="mb-4">
+                @if (Model.OldPrice > 0)
+                {
+                    <div class="d-flex align-items-baseline gap-3 mb-2">
+                        <span class="fs-2 fw-bold" style="color: var(--bg-btn-primary);">@Model.Price.ToString("N0").Replace(",", " ") ₽</span>
+                        <span class="fs-5 text-muted text-decoration-line-through">@Model.OldPrice.ToString("N0").Replace(",", " ") ₽</span>
+                    </div>
+                    <span class="badge bg-danger fs-6">Выгода @(Model.OldPrice - Model.Price) ₽</span>
+                }
+                else
+                {
+                    <span class="fs-2 fw-bold" style="color: var(--bg-btn-primary);">@Model.Price.ToString("N0").Replace(",", " ") ₽</span>
+                }
+            </div>
+
+            <hr>
+
+            <!-- Size Selection -->
+            <div class="mb-4">
+                <h5 class="fw-bold mb-3">Размер <span class="text-danger">*</span></h5>
+                <div class="d-flex flex-wrap gap-2" id="sizeSelector">
+                    @foreach (var size in Model.Sizes)
+                    {
+                        <button type="button" class="btn-size" onclick="selectSize(this)" data-size="@size">
+                            @size
+                        </button>
+                    }
+                </div>
+                <small class="text-danger mt-2 d-none" id="sizeError">
+                    <i class="bi bi-exclamation-circle me-1"></i>Пожалуйста, выберите размер
+                </small>
+            </div>
+
+            <!-- Product Characteristics -->
+            <div class="mb-4">
+                <h5 class="fw-bold mb-3">Характеристики</h5>
+                <table class="table table-borderless mb-0" style="--bs-table-bg: transparent;">
+                    <tbody>
+                        <tr>
+                            <td class="text-muted pe-3">Материал:</td>
+                            <td class="fw-semibold">@Model.Material</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted pe-3">Цвет:</td>
+                            <td class="fw-semibold">@Model.Color</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted pe-3">Состояние:</td>
+                            <td>
+                                <span class="badge @(Model.Condition == "Новое" ? "bg-success" : "bg-warning text-dark") fs-6">
+                                    @Model.Condition
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex gap-3 mt-4">
+                <button class="btn btn-primary btn-lg flex-grow-1" id="addToCartBtn" onclick="addToCartFromProduct()" style="padding: 14px 32px;">
+                    <i class="bi bi-cart-plus me-2"></i>Добавить в корзину
+                </button>
+                <button class="btn btn-outline-danger btn-lg" id="addToFavBtn" onclick="addToFavoritesFromProduct()">
+                    <i class="bi bi-heart me-2"></i>В избранное
+                </button>
+            </div>
+            <small class="text-danger mt-2 d-none" id="actionError">
+                <i class="bi bi-exclamation-circle me-1"></i>Сначала выберите размер
+            </small>
+        </div>
+    </div>
+
+    <!-- Description -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="fw-bold mb-4">Описание</h3>
+                    <p class="fs-5 text-muted">
+                        @Model.Name — стильная и комфортная обувь из коллекции 2026 года. 
+                        Изготов@(Model.Material.Contains("кожа", StringComparison.OrdinalIgnoreCase) ? "лена из натуральной кожи, которая" : "лена из качественных материалов, которые") обеспечивают долговечность и комфорт при носке. 
+                        Идеально подходит для повседневной носки и создаёт элегантный образ.
+                    </p>
+                    <div class="row g-4 mt-3">
+                        <div class="col-md-12">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="feature-icon rounded-3 p-3">
+                                    <i class="bi bi-shield-check" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">Гарантия качества</h6>
+                                    <small class="text-muted">Качественный товар</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        var favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        var selectedSize = null;
+
+        var productName = '@Html.Raw(Model.Name)';
+        var productPrice = @Model.Price;
+
+        function selectSize(btn) {
+            document.querySelectorAll('.btn-size').forEach(function(b) {
+                b.classList.remove('active');
+            });
+            btn.classList.add('active');
+            selectedSize = btn.getAttribute('data-size');
+            document.getElementById('sizeError').classList.add('d-none');
+            document.getElementById('actionError').classList.add('d-none');
+        }
+
+        function validateSize() {
+            if (!selectedSize) {
+                document.getElementById('sizeError').classList.remove('d-none');
+                document.getElementById('actionError').classList.remove('d-none');
+                document.getElementById('sizeSelector').classList.add('shake');
+                setTimeout(function() {
+                    document.getElementById('sizeSelector').classList.remove('shake');
+                }, 500);
+                return false;
+            }
+            return true;
+        }
+
+        function addToCartFromProduct() {
+            if (!validateSize()) return;
+
+            var existingItem = null;
+            for (var i = 0; i < cart.length; i++) {
+                if (cart[i].name === productName && cart[i].size === selectedSize) {
+                    existingItem = cart[i];
+                    break;
+                }
+            }
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ name: productName, price: productPrice, size: selectedSize, quantity: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            var count = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
+            $('#cartCount').text(count);
+            updateNavCounts();
+            
+            var btn = document.getElementById('addToCartBtn');
+            var originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Добавлено! (размер ' + selectedSize + ')';
+            btn.classList.add('btn-success');
+            setTimeout(function() {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('btn-success');
+            }, 2000);
+        }
+
+        function addToFavoritesFromProduct() {
+            if (!validateSize()) return;
+
+            var favItem = { name: productName, size: selectedSize, price: productPrice, emoji: '@Html.Raw(Model.Emoji)', category: '@Html.Raw(Model.Category)' };
+            var exists = false;
+            for (var i = 0; i < favorites.length; i++) {
+                if (favorites[i].name === productName && favorites[i].size === selectedSize) {
+                    exists = true;
+                    break;
+                }
+            }
+            
+            if (!exists) {
+                favorites.push(favItem);
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavoritesCount();
+            updateNavCounts();
+            
+            var btn = document.getElementById('addToFavBtn');
+            var originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check-lg me-2"></i>В избранном!';
+            btn.classList.add('btn-success');
+            btn.classList.remove('btn-outline-danger');
+            setTimeout(function() {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-danger');
+            }, 2000);
+        }
+
+        function updateFavoritesCount() {
+            $('#favoritesCount').text(favorites.length);
+        }
+
+        $(document).ready(function() {
+            updateFavoritesCount();
+        });
+    </script>
+}
