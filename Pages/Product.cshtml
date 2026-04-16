@@ -53,11 +53,18 @@
             <div class="mb-4">
                 <h5 class="fw-bold mb-3">Размер <span class="text-danger">*</span></h5>
                 <div class="d-flex flex-wrap gap-2" id="sizeSelector">
-                    @foreach (var size in Model.Sizes)
+                    @if (Model.Sizes.Any())
                     {
-                        <button type="button" class="btn-size" onclick="selectSize(this)" data-size="@size">
-                            @size
-                        </button>
+                        @foreach (var size in Model.Sizes.OrderBy(s => s.Size))
+                        {
+                            <button type="button" class="btn-size" onclick="selectSize(this)" data-size="@size.Size">
+                                @size.Size
+                            </button>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">Нет размеров в наличии</p>
                     }
                 </div>
                 <small class="text-danger mt-2 d-none" id="sizeError">
@@ -143,6 +150,8 @@
 
         var productName = '@Html.Raw(Model.Name)';
         var productPrice = @Model.Price;
+        var productEmoji = '@Html.Raw(Model.Emoji)';
+        var productCategory = '@Html.Raw(Model.Category)';
 
         function selectSize(btn) {
             document.querySelectorAll('.btn-size').forEach(function(b) {
@@ -170,53 +179,24 @@
         function addToCartFromProduct() {
             if (!validateSize()) return;
 
-            var existingItem = null;
-            for (var i = 0; i < cart.length; i++) {
-                if (cart[i].name === productName && cart[i].size === selectedSize) {
-                    existingItem = cart[i];
-                    break;
-                }
-            }
-            if (existingItem) {
-                existingItem.quantity++;
-            } else {
-                cart.push({ name: productName, price: productPrice, size: selectedSize, quantity: 1 });
-            }
-            localStorage.setItem('cart', JSON.stringify(cart));
-            
-            var count = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
-            $('#cartCount').text(count);
-            updateNavCounts();
-            
-            var btn = document.getElementById('addToCartBtn');
-            var originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Добавлено! (размер ' + selectedSize + ')';
-            btn.classList.add('btn-success');
-            setTimeout(function() {
-                btn.innerHTML = originalHTML;
-                btn.classList.remove('btn-success');
-            }, 2000);
+            addToCart(productName, productPrice, selectedSize, function() {
+                var btn = document.getElementById('addToCartBtn');
+                var originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Добавлено! (размер ' + selectedSize + ')';
+                btn.classList.add('btn-success');
+                setTimeout(function() {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('btn-success');
+                }, 2000);
+            });
         }
 
         function addToFavoritesFromProduct() {
             if (!validateSize()) return;
 
-            var favItem = { name: productName, size: selectedSize, price: productPrice, emoji: '@Html.Raw(Model.Emoji)', category: '@Html.Raw(Model.Category)' };
-            var exists = false;
-            for (var i = 0; i < favorites.length; i++) {
-                if (favorites[i].name === productName && favorites[i].size === selectedSize) {
-                    exists = true;
-                    break;
-                }
-            }
-            
-            if (!exists) {
-                favorites.push(favItem);
-            }
-            localStorage.setItem('favorites', JSON.stringify(favorites));
+            addToFavorites(productName, productPrice, selectedSize, productEmoji, productCategory);
             updateFavoritesCount();
-            updateNavCounts();
-            
+
             var btn = document.getElementById('addToFavBtn');
             var originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="bi bi-check-lg me-2"></i>В избранном!';
