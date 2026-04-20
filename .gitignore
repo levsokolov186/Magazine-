@@ -1,4 +1,6 @@
-# Build results
+ # Build results
+.bin/
+.obj/
 bin/
 obj/
 
@@ -53,6 +55,3 @@ appsettings.Development.json
 
 # Logs
 *.log
-
-# Data files
-data.json
