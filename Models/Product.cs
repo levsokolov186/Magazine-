@@ -45,5 +45,43 @@ namespace ShoesStore.Models
 
         // Навигационное свойство
         public List<ProductSize> Sizes { get; set; } = new();
+
+        public static Product FromInput(ProductInput input, List<SizeEntry> sizes)
+        {
+            return new Product
+            {
+                Name = input.Name,
+                Description = input.Description,
+                Price = input.Price,
+                OldPrice = input.OldPrice,
+                Emoji = input.Emoji,
+                Category = input.Category,
+                Material = input.Material,
+                Color = input.Color,
+                CreatedAt = DateTime.Now,
+                Sizes = sizes.Select(s => new ProductSize
+                {
+                    Size = s.Size,
+                    InStock = s.InStock
+                }).ToList()
+            };
+        }
+
+        public void UpdateFrom(ProductInput input, List<SizeEntry> sizes)
+        {
+            Name = input.Name;
+            Description = input.Description;
+            Price = input.Price;
+            OldPrice = input.OldPrice;
+            Emoji = input.Emoji;
+            Category = input.Category;
+            Material = input.Material;
+            Color = input.Color;
+            Sizes = sizes.Select(s => new ProductSize
+            {
+                Size = s.Size,
+                InStock = s.InStock
+            }).ToList();
+        }
     }
 }

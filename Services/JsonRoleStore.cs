@@ -1,12 +1,8 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using ShoesStore.Models;
 
 namespace ShoesStore.Services
 {
-    public class JsonRoleStore :
-        IRoleStore<IdentityRole>,
-        IRoleClaimStore<IdentityRole>
+    public class JsonRoleStore : IRoleStore<IdentityRole>
     {
         private readonly JsonDatabaseService _db;
 
@@ -15,30 +11,27 @@ namespace ShoesStore.Services
             _db = db;
         }
 
-        public async Task<IdentityResult> CreateAsync(IdentityRole role, CancellationToken cancellationToken)
+        public Task<IdentityResult> CreateAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var roles = _db.Roles;
             role.Id = Guid.NewGuid().ToString();
             roles.Add(role);
-            await Task.CompletedTask;
-            return IdentityResult.Success;
+            return Task.FromResult(IdentityResult.Success);
         }
 
-        public async Task<IdentityResult> UpdateAsync(IdentityRole role, CancellationToken cancellationToken)
+        public Task<IdentityResult> UpdateAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await Task.CompletedTask;
-            return IdentityResult.Success;
+            return Task.FromResult(IdentityResult.Success);
         }
 
-        public async Task<IdentityResult> DeleteAsync(IdentityRole role, CancellationToken cancellationToken)
+        public Task<IdentityResult> DeleteAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var roles = _db.Roles;
             roles.Remove(role);
-            await Task.CompletedTask;
-            return IdentityResult.Success;
+            return Task.FromResult(IdentityResult.Success);
         }
 
         public Task<string> GetRoleIdAsync(IdentityRole role, CancellationToken cancellationToken)
@@ -82,21 +75,6 @@ namespace ShoesStore.Services
             cancellationToken.ThrowIfCancellationRequested();
             var role = _db.Roles.FirstOrDefault(r => r.NormalizedName == normalizedRoleName);
             return Task.FromResult(role);
-        }
-
-        public Task<IList<Claim>> GetClaimsAsync(IdentityRole role, CancellationToken cancellationToken)
-        {
-            return Task.FromResult<IList<Claim>>(new List<Claim>());
-        }
-
-        public Task AddClaimAsync(IdentityRole role, Claim claim, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task RemoveClaimAsync(IdentityRole role, Claim claim, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
         }
 
         public void Dispose()

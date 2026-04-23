@@ -34,7 +34,7 @@ namespace ShoesStore.Pages
 
         public string Material { get; set; } = string.Empty;
         public string Color { get; set; } = string.Empty;
-        public string Condition { get; set; } = "Новое";
+        public string Description { get; set; } = string.Empty;
         public List<ProductSize> Sizes { get; set; } = new();
 
         public void OnGet()
@@ -45,7 +45,7 @@ namespace ShoesStore.Pages
             {
                 Material = product.Material;
                 Color = product.Color;
-                Condition = "Новое";
+                Description = product.Description;
                 Sizes = product.Sizes?.Where(s => s.InStock).ToList() ?? new List<ProductSize>();
                 Price = product.Price;
                 Emoji = product.Emoji;
@@ -56,7 +56,6 @@ namespace ShoesStore.Pages
             {
                 Material = "Натуральная кожа";
                 Color = "Чёрный";
-                Condition = "Новое";
                 Sizes = new List<ProductSize>
                 {
                     new() { Size = 36, InStock = true },

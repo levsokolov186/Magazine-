@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using ShoesStore.Models;
 using ShoesStore.Services;
@@ -9,12 +8,7 @@ namespace ShoesStore.Services
         IUserStore<ApplicationUser>,
         IUserPasswordStore<ApplicationUser>,
         IUserRoleStore<ApplicationUser>,
-        IUserEmailStore<ApplicationUser>,
-        IUserClaimStore<ApplicationUser>,
-        IUserLoginStore<ApplicationUser>,
-        IUserPhoneNumberStore<ApplicationUser>,
-        IUserTwoFactorStore<ApplicationUser>,
-        IUserLockoutStore<ApplicationUser>
+        IUserEmailStore<ApplicationUser>
     {
         private readonly JsonDatabaseService _db;
 
@@ -23,23 +17,21 @@ namespace ShoesStore.Services
             _db = db;
         }
 
-        public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
+        public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var users = _db.Users;
             user.Id = Guid.NewGuid().ToString();
             users.Add(user);
-            await Task.CompletedTask;
-            return IdentityResult.Success;
+            return Task.FromResult(IdentityResult.Success);
         }
 
-        public async Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken)
+        public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var users = _db.Users;
             users.Remove(user);
-            await Task.CompletedTask;
-            return IdentityResult.Success;
+            return Task.FromResult(IdentityResult.Success);
         }
 
         public Task<ApplicationUser?> FindByIdAsync(string userId, CancellationToken cancellationToken)
@@ -85,11 +77,10 @@ namespace ShoesStore.Services
             return Task.CompletedTask;
         }
 
-        public async Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)
+        public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await Task.CompletedTask;
-            return IdentityResult.Success;
+            return Task.FromResult(IdentityResult.Success);
         }
 
         public Task SetPasswordHashAsync(ApplicationUser user, string? passwordHash, CancellationToken cancellationToken)
@@ -132,7 +123,7 @@ namespace ShoesStore.Services
         {
             if (string.IsNullOrEmpty(user.UserName))
                 return Task.FromResult<IList<string>>(new List<string>());
-            
+
             var roles = _db.UserRoles
                 .Where(r => r.StartsWith(user.UserName + "|"))
                 .Select(r => r.Substring(user.UserName.Length + 1))
@@ -144,7 +135,7 @@ namespace ShoesStore.Services
         {
             if (string.IsNullOrEmpty(user.UserName))
                 return Task.FromResult(false);
-            
+
             var roleKey = $"{user.UserName}|{roleName}";
             return Task.FromResult(_db.UserRoles.Contains(roleKey));
         }
@@ -153,11 +144,11 @@ namespace ShoesStore.Services
         {
             if (string.IsNullOrEmpty(roleName))
                 return Task.FromResult<IList<ApplicationUser>>(new List<ApplicationUser>());
-            
+
             var userNames = _db.UserRoles
                 .Where(r => r.EndsWith("|" + roleName))
                 .Select(r => r.Substring(0, r.Length - roleName.Length - 1));
-            
+
             var users = _db.Users.Where(u => u.UserName != null && userNames.Contains(u.UserName)).ToList();
             return Task.FromResult<IList<ApplicationUser>>(users);
         }
@@ -202,130 +193,6 @@ namespace ShoesStore.Services
         {
             cancellationToken.ThrowIfCancellationRequested();
             user.NormalizedEmail = normalizedEmail;
-            return Task.CompletedTask;
-        }
-
-        public Task<IList<Claim>> GetClaimsAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            return Task.FromResult<IList<Claim>>(new List<Claim>());
-        }
-
-        public Task AddClaimsAsync(ApplicationUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task ReplaceClaimAsync(ApplicationUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task RemoveClaimsAsync(ApplicationUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task<IList<ApplicationUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
-        {
-            return Task.FromResult<IList<ApplicationUser>>(new List<ApplicationUser>());
-        }
-
-        public Task AddLoginAsync(ApplicationUser user, UserLoginInfo login, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task RemoveLoginAsync(ApplicationUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task<IList<UserLoginInfo>> GetLoginsAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            return Task.FromResult<IList<UserLoginInfo>>(new List<UserLoginInfo>());
-        }
-
-        public Task<ApplicationUser?> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
-        {
-            return Task.FromResult<ApplicationUser?>(null);
-        }
-
-        public Task SetPhoneNumberAsync(ApplicationUser user, string? phoneNumber, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            user.PhoneNumber = phoneNumber;
-            return Task.CompletedTask;
-        }
-
-        public Task<string?> GetPhoneNumberAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(user.PhoneNumber);
-        }
-
-        public Task<bool> GetPhoneNumberConfirmedAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(user.PhoneNumberConfirmed);
-        }
-
-        public Task SetPhoneNumberConfirmedAsync(ApplicationUser user, bool confirmed, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            user.PhoneNumberConfirmed = confirmed;
-            return Task.CompletedTask;
-        }
-
-        public Task<bool> GetTwoFactorEnabledAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(user.TwoFactorEnabled);
-        }
-
-        public Task SetTwoFactorEnabledAsync(ApplicationUser user, bool enabled, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            user.TwoFactorEnabled = enabled;
-            return Task.CompletedTask;
-        }
-
-        public Task<DateTimeOffset?> GetLockoutEndDateAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            return Task.FromResult<DateTimeOffset?>(user.LockoutEnd);
-        }
-
-        public Task SetLockoutEndDateAsync(ApplicationUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            user.LockoutEnd = lockoutEnd;
-            return Task.CompletedTask;
-        }
-
-        public Task<int> IncrementAccessFailedCountAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            user.AccessFailedCount++;
-            return Task.FromResult(user.AccessFailedCount);
-        }
-
-        public Task ResetAccessFailedCountAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            user.AccessFailedCount = 0;
-            return Task.CompletedTask;
-        }
-
-        public Task<int> GetAccessFailedCountAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(user.AccessFailedCount);
-        }
-
-        public Task<bool> GetLockoutEnabledAsync(ApplicationUser user, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(user.LockoutEnabled);
-        }
-
-        public Task SetLockoutEnabledAsync(ApplicationUser user, bool enabled, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            user.LockoutEnabled = enabled;
             return Task.CompletedTask;
         }
 

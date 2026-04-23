@@ -8,6 +8,7 @@ namespace ShoesStore.Services
     public class JsonDatabaseService
     {
         private readonly string _dataFilePath;
+        private readonly object _lock = new();
         private ApplicationDbData _data = null!;
         private IPasswordHasher<ApplicationUser>? _passwordHasher;
 
@@ -38,12 +39,15 @@ namespace ShoesStore.Services
 
         private void SaveData()
         {
-            var options = new JsonSerializerOptions
+            lock (_lock)
             {
-                WriteIndented = true
-            };
-            var json = JsonSerializer.Serialize(_data, options);
-            File.WriteAllText(_dataFilePath, json);
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                };
+                var json = JsonSerializer.Serialize(_data, options);
+                File.WriteAllText(_dataFilePath, json);
+            }
         }
 
         public List<Product> Products
@@ -104,13 +108,17 @@ namespace ShoesStore.Services
                 _passwordHasher = new PasswordHasher<ApplicationUser>();
             }
 
+            var modified = false;
+
             if (!_data.Roles.Any(r => r.Name == "Admin"))
             {
                 _data.Roles.Add(new IdentityRole("Admin"));
+                modified = true;
             }
             if (!_data.Roles.Any(r => r.Name == "User"))
             {
                 _data.Roles.Add(new IdentityRole("User"));
+                modified = true;
             }
 
             if (!_data.Users.Any(u => u.UserName == "admin@stepstyle.ru"))
@@ -126,6 +134,7 @@ namespace ShoesStore.Services
                 adminUser.PasswordHash = _passwordHasher.HashPassword(adminUser, "Admin123!");
                 _data.Users.Add(adminUser);
                 _data.UserRoles.Add("admin@stepstyle.ru|Admin");
+                modified = true;
             }
 
             if (!_data.Users.Any(u => u.UserName == "user@stepstyle.ru"))
@@ -140,9 +149,10 @@ namespace ShoesStore.Services
                 };
                 regularUser.PasswordHash = _passwordHasher.HashPassword(regularUser, "User123!");
                 _data.Users.Add(regularUser);
+                modified = true;
             }
 
-            if (_data.Roles.Any() || _data.Users.Any())
+            if (modified)
             {
                 SaveData();
             }

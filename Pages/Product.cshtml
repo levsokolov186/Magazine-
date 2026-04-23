@@ -88,9 +88,7 @@
                         <tr>
                             <td class="text-muted pe-3">Состояние:</td>
                             <td>
-                                <span class="badge @(Model.Condition == "Новое" ? "bg-success" : "bg-warning text-dark") fs-6">
-                                    @Model.Condition
-                                </span>
+                                <span class="badge bg-success fs-6">Новое</span>
                             </td>
                         </tr>
                     </tbody>
@@ -118,11 +116,18 @@
             <div class="card">
                 <div class="card-body p-4 p-md-5">
                     <h3 class="fw-bold mb-4">Описание</h3>
-                    <p class="fs-5 text-muted">
-                        @Model.Name — стильная и комфортная обувь из коллекции 2026 года. 
-                        Изготов@(Model.Material.Contains("кожа", StringComparison.OrdinalIgnoreCase) ? "лена из натуральной кожи, которая" : "лена из качественных материалов, которые") обеспечивают долговечность и комфорт при носке. 
-                        Идеально подходит для повседневной носки и создаёт элегантный образ.
-                    </p>
+                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <p class="fs-5 text-muted">@Model.Description</p>
+                    }
+                    else
+                    {
+                        <p class="fs-5 text-muted">
+                            @Model.Name — стильная и комфортная обувь из коллекции 2026 года.
+                            Изготов@(Model.Material.Contains("кожа", StringComparison.OrdinalIgnoreCase) ? "лена из натуральной кожи, которая" : "лена из качественных материалов, которые") обеспечивают долговечность и комфорт при носке.
+                            Идеально подходит для повседневной носки и создаёт элегантный образ.
+                        </p>
+                    }
                     <div class="row g-4 mt-3">
                         <div class="col-md-12">
                             <div class="d-flex align-items-center gap-3">
@@ -210,7 +215,8 @@
         }
 
         function updateFavoritesCount() {
-            $('#favoritesCount').text(favorites.length);
+            var currentFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            $('#favoritesCount').text(currentFavorites.length);
         }
 
         $(document).ready(function() {

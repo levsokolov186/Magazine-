@@ -82,7 +82,7 @@
                 totalItems += item.quantity;
                 totalPrice += itemTotal;
                 
-                var emoji = productEmojis[item.name] || '👠';
+                var emoji = '👠';
                 var sizeInfo = item.size ? '<p class="text-muted mb-0">Размер: <strong>' + item.size + '</strong></p>' : '<p class="text-muted mb-0">Размер не указан</p>';
 
                 var itemHtml = '<div class="cart-item" style="cursor: pointer;" onclick="navigateToProduct(\'' + item.name.replace(/'/g, "\\'") + '\', ' + item.price + ', ' + emoji + ', \'Новинка\')">' +
