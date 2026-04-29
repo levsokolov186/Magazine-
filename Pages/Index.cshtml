@@ -1,21 +1,20 @@
-﻿@page
+@page
 @model IndexModel
+@using System.Globalization
 @{
-    ViewData["Title"] = "StepStyle — Женская обувь";
+    ViewData["Title"] = "Женская обувь";
 }
 
-<!-- Hero Section -->
 <section class="hero-section">
     <div class="hero-content">
         <h1 class="hero-title">Коллекция 2026</h1>
         <p class="hero-subtitle">Стильная и комфортная обувь для настоящих леди</p>
         <a href="#products" class="btn btn-hero">
-            <i class="bi bi-arrow-down-circle me-2"></i>Смотреть каталог
+            <i class="bi bi-arrow-down-circle me-2" aria-hidden="true"></i>Смотреть каталог
         </a>
     </div>
 </section>
 
-<!-- Products Section -->
 <section id="products" class="products-section py-5">
     <div class="container">
         <div class="text-center mb-5">
@@ -26,61 +25,49 @@
             {
                 @foreach (var product in Model.Products)
                 {
-                    var badge = product.OldPrice.HasValue ? $"-{Math.Round((1 - (double)product.Price / (double)product.OldPrice.Value) * 100)}%" : "Новинка";
-                    <div class="col-md-4 col-lg-3">
-                        <div class="product-card" onclick="openProduct('@product.Name.Replace("'", "\\'")', '@product.Category.Replace("'", "\\'")', @product.Price, '@product.Emoji', @(product.OldPrice.HasValue ? product.OldPrice.Value.ToString() : "0"))">
-                            <div class="product-image">
-                                <div class="placeholder-img"><span>@product.Emoji</span></div>
-                                @if (product.OldPrice.HasValue)
-                                {
-                                    <span class="badge-sale">@badge</span>
-                                }
-                                else
-                                {
-                                    <span class="badge-new">@badge</span>
-                                }
-                            </div>
-                            <div class="product-info">
-                                <h5 class="product-name">@product.Name</h5>
-                                <p class="product-category">@product.Category</p>
-                                <p class="product-hint text-muted mb-2"><small><i class="bi bi-hand-index me-1"></i>Нажмите, чтобы выбрать размер</small></p>
-                                <div class="d-flex justify-content-between align-items-center mt-auto">
-                                    <div>
-                                        <span class="product-price">@product.Price.ToString("N0").Replace(",", " ") ₽</span>
-                                        @if (product.OldPrice.HasValue)
-                                        {
-                                            <br><small class="text-muted text-decoration-line-through">@product.OldPrice.Value.ToString("N0").Replace(",", " ") ₽</small>
-                                        }
+                    <div class="col-md-4 col-lg-3 col-12">
+                        <a class="product-card-link" href="@Url.Page("Product", new { id = product.Id })">
+                            <div class="product-card">
+                                <div class="product-image">
+                                    <div class="placeholder-img" role="img" aria-label="@product.Name"><span>@product.Emoji</span></div>
+                                    @if (product.HasDiscount)
+                                    {
+                                        <span class="badge-sale">@product.DiscountBadge</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-new">Новинка</span>
+                                    }
+                                </div>
+                                <div class="product-info">
+                                    <h3 class="product-name h5">@product.Name</h3>
+                                    <p class="product-category">@product.Category</p>
+                                    <p class="product-hint text-muted mb-2"><small><i class="bi bi-hand-index me-1" aria-hidden="true"></i>Нажмите, чтобы выбрать размер</small></p>
+                                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                                        <div>
+                                            <span class="product-price">@product.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", " ") ₽</span>
+                                            @if (product.OldPrice.HasValue)
+                                            {
+                                                <br><small class="text-muted price-old">@product.OldPrice.Value.ToString("N0", CultureInfo.InvariantCulture).Replace(",", " ") ₽</small>
+                                            }
+                                        </div>
+                                        <span class="btn btn-cart" role="presentation">
+                                            <i class="bi bi-arrow-right-circle" aria-hidden="true"></i> Подробнее
+                                        </span>
                                     </div>
-                                    <button class="btn btn-cart" onclick="event.stopPropagation(); openProduct('@product.Name.Replace("'", "\\'")', '@product.Category.Replace("'", "\\'")', @product.Price, '@product.Emoji', @(product.OldPrice.HasValue ? product.OldPrice.Value.ToString() : "0"))">
-                                        <i class="bi bi-cart-plus"></i> В корзину
-                                    </button>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 }
             }
             else
             {
                 <div class="col-12 text-center py-5 text-muted">
-                    <i class="bi bi-inbox" style="font-size: 5rem;"></i>
+                    <i class="bi bi-inbox" aria-hidden="true" style="font-size: 5rem;"></i>
                     <p class="mt-3">Товары скоро появятся</p>
                 </div>
             }
         </div>
     </div>
 </section>
-
-@section Scripts {
-    <script>
-        function openProduct(name, category, price, emoji, oldPrice) {
-            var badge = oldPrice ? '-' + Math.round((1 - price / oldPrice) * 100) + '%' : 'Новинка';
-            navigateToProduct(name, price, emoji, badge);
-        }
-
-        $(document).ready(function() {
-            updateNavCounts();
-        });
-    </script>
-}

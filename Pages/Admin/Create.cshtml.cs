@@ -12,7 +12,7 @@ namespace ShoesStore.Pages.Admin
 
         public IActionResult OnGet()
         {
-            SizeEntries = new List<SizeEntry>
+            SizeEntries = new List<ProductSize>
             {
                 new() { Size = 36, InStock = true },
                 new() { Size = 37, InStock = true },
@@ -23,7 +23,7 @@ namespace ShoesStore.Pages.Admin
             return Page();
         }
 
-        public IActionResult OnPostAsync(string action, decimal? newSize)
+        public IActionResult OnPost(string? action, decimal? newSize)
         {
             var sizeResult = HandleSizeAction(action, newSize);
             if (sizeResult != null) return sizeResult;

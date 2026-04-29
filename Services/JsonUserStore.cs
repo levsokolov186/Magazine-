@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using ShoesStore.Models;
-using ShoesStore.Services;
 
 namespace ShoesStore.Services
 {
@@ -8,7 +7,8 @@ namespace ShoesStore.Services
         IUserStore<ApplicationUser>,
         IUserPasswordStore<ApplicationUser>,
         IUserRoleStore<ApplicationUser>,
-        IUserEmailStore<ApplicationUser>
+        IUserEmailStore<ApplicationUser>,
+        IUserSecurityStampStore<ApplicationUser>
     {
         private readonly JsonDatabaseService _db;
 
@@ -20,41 +20,50 @@ namespace ShoesStore.Services
         public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var users = _db.Users;
-            user.Id = Guid.NewGuid().ToString();
-            users.Add(user);
+            if (user.NormalizedUserName != null && _db.FindUserByNormalizedName(user.NormalizedUserName) != null)
+            {
+                return Task.FromResult(IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DuplicateUserName",
+                    Description = "Пользователь с таким именем уже существует."
+                }));
+            }
+            if (string.IsNullOrEmpty(user.Id))
+            {
+                user.Id = Guid.NewGuid().ToString();
+            }
+            _db.AddUser(user);
             return Task.FromResult(IdentityResult.Success);
         }
 
         public Task<IdentityResult> DeleteAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var users = _db.Users;
-            users.Remove(user);
+            _db.RemoveUserById(user.Id);
             return Task.FromResult(IdentityResult.Success);
         }
 
         public Task<ApplicationUser?> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var user = _db.Users.FirstOrDefault(u => u.Id == userId);
-            return Task.FromResult(user);
+            return Task.FromResult(_db.FindUserById(userId));
         }
 
         public Task<ApplicationUser?> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var user = _db.Users.FirstOrDefault(u => u.NormalizedUserName == normalizedUserName);
-            return Task.FromResult(user);
+            return Task.FromResult(_db.FindUserByNormalizedName(normalizedUserName));
         }
 
         public Task<string> GetUserIdAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(user.Id);
         }
 
         public Task<string?> GetUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(user.UserName);
         }
 
@@ -67,6 +76,7 @@ namespace ShoesStore.Services
 
         public Task<string?> GetNormalizedUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(user.NormalizedUserName);
         }
 
@@ -80,6 +90,7 @@ namespace ShoesStore.Services
         public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            _db.Save();
             return Task.FromResult(IdentityResult.Success);
         }
 
@@ -92,21 +103,22 @@ namespace ShoesStore.Services
 
         public Task<string?> GetPasswordHashAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(user.PasswordHash);
         }
 
         public Task<bool> HasPasswordAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(!string.IsNullOrEmpty(user.PasswordHash));
         }
 
         public Task AddToRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var roleKey = $"{user.UserName}|{roleName}";
-            if (!_db.UserRoles.Contains(roleKey))
+            if (!string.IsNullOrEmpty(user.UserName))
             {
-                _db.UserRoles.Add(roleKey);
+                _db.AddUserRole($"{user.UserName}|{roleName}");
             }
             return Task.CompletedTask;
         }
@@ -114,42 +126,44 @@ namespace ShoesStore.Services
         public Task RemoveFromRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var roleKey = $"{user.UserName}|{roleName}";
-            _db.UserRoles.Remove(roleKey);
+            if (!string.IsNullOrEmpty(user.UserName))
+            {
+                _db.RemoveUserRole($"{user.UserName}|{roleName}");
+            }
             return Task.CompletedTask;
         }
 
         public Task<IList<string>> GetRolesAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (string.IsNullOrEmpty(user.UserName))
+            {
                 return Task.FromResult<IList<string>>(new List<string>());
-
-            var roles = _db.UserRoles
-                .Where(r => r.StartsWith(user.UserName + "|"))
-                .Select(r => r.Substring(user.UserName.Length + 1))
-                .ToList();
-            return Task.FromResult<IList<string>>(roles);
+            }
+            return Task.FromResult<IList<string>>(_db.GetUserRolesByUser(user.UserName));
         }
 
         public Task<bool> IsInRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (string.IsNullOrEmpty(user.UserName))
+            {
                 return Task.FromResult(false);
-
-            var roleKey = $"{user.UserName}|{roleName}";
-            return Task.FromResult(_db.UserRoles.Contains(roleKey));
+            }
+            return Task.FromResult(_db.ContainsUserRole($"{user.UserName}|{roleName}"));
         }
 
         public Task<IList<ApplicationUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (string.IsNullOrEmpty(roleName))
+            {
                 return Task.FromResult<IList<ApplicationUser>>(new List<ApplicationUser>());
-
-            var userNames = _db.UserRoles
-                .Where(r => r.EndsWith("|" + roleName))
-                .Select(r => r.Substring(0, r.Length - roleName.Length - 1));
-
-            var users = _db.Users.Where(u => u.UserName != null && userNames.Contains(u.UserName)).ToList();
+            }
+            var userNames = _db.GetUserNamesInRole(roleName);
+            var users = _db.Users
+                .Where(u => u.UserName != null && userNames.Contains(u.UserName))
+                .ToList();
             return Task.FromResult<IList<ApplicationUser>>(users);
         }
 
@@ -162,11 +176,13 @@ namespace ShoesStore.Services
 
         public Task<string?> GetEmailAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(user.Email);
         }
 
         public Task<bool> GetEmailConfirmedAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(user.EmailConfirmed);
         }
 
@@ -180,12 +196,12 @@ namespace ShoesStore.Services
         public Task<ApplicationUser?> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var user = _db.Users.FirstOrDefault(u => u.NormalizedEmail == normalizedEmail);
-            return Task.FromResult(user);
+            return Task.FromResult(_db.FindUserByNormalizedEmail(normalizedEmail));
         }
 
         public Task<string?> GetNormalizedEmailAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(user.NormalizedEmail);
         }
 
@@ -196,8 +212,22 @@ namespace ShoesStore.Services
             return Task.CompletedTask;
         }
 
+        public Task SetSecurityStampAsync(ApplicationUser user, string stamp, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            user.SecurityStamp = stamp;
+            return Task.CompletedTask;
+        }
+
+        public Task<string?> GetSecurityStampAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Task.FromResult(user.SecurityStamp);
+        }
+
         public void Dispose()
         {
+            // No unmanaged resources to release.
         }
     }
 }

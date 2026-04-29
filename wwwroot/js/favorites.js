@@ -1,35 +1,31 @@
-// Favorites management
-(function() {
-    var FAVORITES_KEY = 'favorites';
+(function () {
+    'use strict';
 
-    function getFavorites() {
-        return JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
-    }
-
-    function saveFavorites(favorites) {
-        localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-    }
-
-    window.addToFavorites = function(name, price, size, emoji, category) {
-        var favorites = getFavorites();
-        var exists = false;
+    window.addToFavorites = function (name, price, size, emoji, category) {
+        var favorites = window.StepStyle.readFavorites();
         for (var i = 0; i < favorites.length; i++) {
-            if (favorites[i].name === name && favorites[i].size === size) {
-                exists = true;
-                break;
+            if (favorites[i].name === name && String(favorites[i].size) === String(size)) {
+                return; // already favorited
             }
         }
-        if (!exists) {
-            favorites.push({
-                name: name,
-                size: size,
-                price: price,
-                emoji: emoji,
-                category: category
-            });
-            saveFavorites(favorites);
-            updateNavCounts();
+        favorites.push({
+            name: name,
+            size: size,
+            price: Number(price) || 0,
+            emoji: emoji || '👠',
+            category: category || ''
+        });
+        window.StepStyle.writeFavorites(favorites);
+        window.StepStyle.updateNavCounts();
+    };
+
+    window.isFavorited = function (name, size) {
+        var favorites = window.StepStyle.readFavorites();
+        for (var i = 0; i < favorites.length; i++) {
+            if (favorites[i].name === name && String(favorites[i].size) === String(size)) {
+                return true;
+            }
         }
-        return favorites;
+        return false;
     };
 })();

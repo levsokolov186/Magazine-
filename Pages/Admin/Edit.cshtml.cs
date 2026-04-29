@@ -12,7 +12,7 @@ namespace ShoesStore.Pages.Admin
 
         public IActionResult OnGet(int id)
         {
-            var product = Db.Products.FirstOrDefault(p => p.Id == id);
+            var product = Db.FindProductById(id);
 
             if (product == null)
             {
@@ -29,22 +29,30 @@ namespace ShoesStore.Pages.Admin
                 Emoji = product.Emoji,
                 Category = product.Category,
                 Material = product.Material,
-                Color = product.Color,
-                CreatedAt = product.CreatedAt
+                Color = product.Color
             };
 
-            SizeEntries = product.Sizes?.Select(s => new SizeEntry
+            SizeEntries = product.Sizes?.Select(s => new ProductSize
             {
-                Id = s.Id,
                 Size = s.Size,
                 InStock = s.InStock
-            }).ToList() ?? new List<SizeEntry>();
+            }).ToList() ?? new List<ProductSize>();
+
+            ProductCreatedAt = product.CreatedAt;
 
             return Page();
         }
 
-        public IActionResult OnPostAsync(string action, decimal? newSize)
+        public IActionResult OnPost(int id, string? action, decimal? newSize)
         {
+            // Re-load CreatedAt for sidebar in case we re-render the page.
+            var current = Db.FindProductById(id);
+            if (current == null)
+            {
+                return NotFound();
+            }
+            ProductCreatedAt = current.CreatedAt;
+
             var sizeResult = HandleSizeAction(action, newSize);
             if (sizeResult != null) return sizeResult;
 
@@ -53,15 +61,13 @@ namespace ShoesStore.Pages.Admin
                 return Page();
             }
 
-            var product = Db.Products.FirstOrDefault(p => p.Id == Product.Id);
-
-            if (product == null)
+            // Make sure the bound id always wins so URL tampering can't switch products.
+            Product.Id = id;
+            current.UpdateFrom(Product, SizeEntries);
+            if (!Db.SaveProduct(current))
             {
                 return NotFound();
             }
-
-            product.UpdateFrom(Product, SizeEntries);
-            Db.SaveProduct(product);
 
             TempData["SuccessMessage"] = "Товар успешно обновлён";
             return RedirectToPage("Index");

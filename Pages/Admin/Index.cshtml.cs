@@ -25,11 +25,13 @@ namespace ShoesStore.Pages.Admin
 
         public IActionResult OnPostDelete(int id)
         {
-            var product = _db.Products.FirstOrDefault(p => p.Id == id);
-            if (product != null)
+            if (_db.RemoveProduct(id))
             {
-                _db.RemoveProduct(product);
                 TempData["SuccessMessage"] = "Товар успешно удалён";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Товар не найден";
             }
             return RedirectToPage();
         }

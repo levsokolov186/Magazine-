@@ -7,6 +7,8 @@ namespace ShoesStore.Pages
 {
     public class ProductModel : PageModel
     {
+        private const string DefaultEmoji = "👠";
+
         private readonly JsonDatabaseService _db;
 
         public ProductModel(JsonDatabaseService db)
@@ -15,56 +17,34 @@ namespace ShoesStore.Pages
         }
 
         [BindProperty(SupportsGet = true)]
-        public string Name { get; set; } = string.Empty;
+        public int? Id { get; set; }
 
-        [BindProperty(SupportsGet = true)]
-        public string Category { get; set; } = string.Empty;
+        // Surfaced fields the view actually consumes. We project from the
+        // Product entity instead of duplicating it on the page model.
+        public string Name => _product?.Name ?? string.Empty;
+        public string Category => _product?.Category ?? string.Empty;
+        public decimal Price => _product?.Price ?? 0m;
+        public string Emoji => string.IsNullOrEmpty(_product?.Emoji) ? DefaultEmoji : _product!.Emoji;
+        public string Badge => _product?.DiscountBadge ?? string.Empty;
+        public decimal? OldPrice => _product?.OldPrice;
+        public string Material => _product?.Material ?? string.Empty;
+        public string Color => _product?.Color ?? string.Empty;
+        public string Description => _product?.Description ?? string.Empty;
+        public IReadOnlyList<ProductSize> Sizes =>
+            _product?.Sizes.Where(s => s.InStock).ToList() ?? new List<ProductSize>();
+        public bool HasDiscount => _product?.HasDiscount ?? false;
 
-        [BindProperty(SupportsGet = true)]
-        public decimal Price { get; set; }
+        private Product? _product;
 
-        [BindProperty(SupportsGet = true)]
-        public string Emoji { get; set; } = "👠";
-
-        [BindProperty(SupportsGet = true)]
-        public string Badge { get; set; } = string.Empty;
-
-        [BindProperty(SupportsGet = true)]
-        public decimal OldPrice { get; set; }
-
-        public string Material { get; set; } = string.Empty;
-        public string Color { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public List<ProductSize> Sizes { get; set; } = new();
-
-        public void OnGet()
+        public IActionResult OnGet()
         {
-            var product = _db.Products.FirstOrDefault(p => p.Name == Name);
+            if (!Id.HasValue)
+            {
+                return NotFound();
+            }
 
-            if (product != null)
-            {
-                Material = product.Material;
-                Color = product.Color;
-                Description = product.Description;
-                Sizes = product.Sizes?.Where(s => s.InStock).ToList() ?? new List<ProductSize>();
-                Price = product.Price;
-                Emoji = product.Emoji;
-                Category = product.Category;
-                OldPrice = product.OldPrice ?? 0;
-            }
-            else
-            {
-                Material = "Натуральная кожа";
-                Color = "Чёрный";
-                Sizes = new List<ProductSize>
-                {
-                    new() { Size = 36, InStock = true },
-                    new() { Size = 37, InStock = true },
-                    new() { Size = 38, InStock = true },
-                    new() { Size = 39, InStock = true },
-                    new() { Size = 40, InStock = true }
-                };
-            }
+            _product = _db.FindProductById(Id.Value);
+            return _product is null ? NotFound() : Page();
         }
     }
 }

@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ShoesStore.Models;
+using ShoesStore.Services;
 
 namespace ShoesStore.Pages.Identity.Account
 {
@@ -19,6 +19,7 @@ namespace ShoesStore.Pages.Identity.Account
         [BindProperty]
         public InputModel Input { get; set; } = new();
 
+        [BindProperty(SupportsGet = true)]
         public string ReturnUrl { get; set; } = "/";
 
         public class InputModel
@@ -39,31 +40,30 @@ namespace ShoesStore.Pages.Identity.Account
 
         public void OnGet(string? returnUrl = null)
         {
-            ReturnUrl = returnUrl ?? "/";
+            ReturnUrl = LocalUrlHelper.SanitizeReturnUrl(Url, returnUrl);
         }
 
         public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
-            ReturnUrl = returnUrl ?? "/";
+            ReturnUrl = LocalUrlHelper.SanitizeReturnUrl(Url, returnUrl);
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(
-                    Input.Email, 
-                    Input.Password, 
-                    Input.RememberMe, 
-                    lockoutOnFailure: false);
-
-                if (result.Succeeded)
-                {
-                    return LocalRedirect(ReturnUrl);
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Неверный email или пароль");
-                }
+                return Page();
             }
 
+            var result = await _signInManager.PasswordSignInAsync(
+                Input.Email,
+                Input.Password,
+                Input.RememberMe,
+                lockoutOnFailure: false);
+
+            if (result.Succeeded)
+            {
+                return LocalRedirect(ReturnUrl);
+            }
+
+            ModelState.AddModelError(string.Empty, "Неверный email или пароль");
             return Page();
         }
     }

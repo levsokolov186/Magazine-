@@ -22,7 +22,8 @@ namespace ShoesStore.Pages.Identity.Account
 
         public IActionResult OnGet()
         {
-            return RedirectToPage("/Index");
+            // Logout must be a POST to prevent CSRF-style sign-out via GET requests.
+            return RedirectToPage("/Identity/Account/Login");
         }
     }
 }

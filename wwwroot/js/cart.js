@@ -1,32 +1,31 @@
-// Cart management
-(function() {
-    var CART_KEY = 'cart';
+(function () {
+    'use strict';
 
-    function getCart() {
-        return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-    }
-
-    function saveCart(cart) {
-        localStorage.setItem(CART_KEY, JSON.stringify(cart));
-    }
-
-    window.addToCart = function(name, price, size, callback) {
-        var cart = getCart();
-        var existingItem = null;
+    window.addToCart = function (name, price, size, emoji, callback) {
+        var cart = window.StepStyle.readCart();
+        var existing = null;
         for (var i = 0; i < cart.length; i++) {
-            if (cart[i].name === name && cart[i].size === size) {
-                existingItem = cart[i];
+            if (cart[i].name === name && String(cart[i].size) === String(size)) {
+                existing = cart[i];
                 break;
             }
         }
-        if (existingItem) {
-            existingItem.quantity++;
+        if (existing) {
+            existing.quantity = (Number(existing.quantity) || 0) + 1;
+            if (emoji && !existing.emoji) {
+                existing.emoji = emoji;
+            }
         } else {
-            cart.push({ name: name, price: price, size: size, quantity: 1 });
+            cart.push({
+                name: name,
+                price: Number(price) || 0,
+                size: size,
+                emoji: emoji || '👠',
+                quantity: 1
+            });
         }
-        saveCart(cart);
-        updateNavCounts();
-        if (callback) callback(cart);
-        return cart;
+        window.StepStyle.writeCart(cart);
+        window.StepStyle.updateNavCounts();
+        if (typeof callback === 'function') callback();
     };
 })();

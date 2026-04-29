@@ -14,33 +14,45 @@ namespace ShoesStore.Services
         public Task<IdentityResult> CreateAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var roles = _db.Roles;
-            role.Id = Guid.NewGuid().ToString();
-            roles.Add(role);
+            if (role.NormalizedName != null && _db.FindRoleByNormalizedName(role.NormalizedName) != null)
+            {
+                return Task.FromResult(IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DuplicateRoleName",
+                    Description = "Роль с таким именем уже существует."
+                }));
+            }
+            if (string.IsNullOrEmpty(role.Id))
+            {
+                role.Id = Guid.NewGuid().ToString();
+            }
+            _db.AddRole(role);
             return Task.FromResult(IdentityResult.Success);
         }
 
         public Task<IdentityResult> UpdateAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            _db.Save();
             return Task.FromResult(IdentityResult.Success);
         }
 
         public Task<IdentityResult> DeleteAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var roles = _db.Roles;
-            roles.Remove(role);
+            _db.RemoveRoleById(role.Id);
             return Task.FromResult(IdentityResult.Success);
         }
 
         public Task<string> GetRoleIdAsync(IdentityRole role, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(role.Id);
         }
 
         public Task<string?> GetRoleNameAsync(IdentityRole role, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(role.Name);
         }
 
@@ -53,6 +65,7 @@ namespace ShoesStore.Services
 
         public Task<string?> GetNormalizedRoleNameAsync(IdentityRole role, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(role.NormalizedName);
         }
 
@@ -66,19 +79,18 @@ namespace ShoesStore.Services
         public Task<IdentityRole?> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var role = _db.Roles.FirstOrDefault(r => r.Id == roleId);
-            return Task.FromResult(role);
+            return Task.FromResult(_db.FindRoleById(roleId));
         }
 
         public Task<IdentityRole?> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var role = _db.Roles.FirstOrDefault(r => r.NormalizedName == normalizedRoleName);
-            return Task.FromResult(role);
+            return Task.FromResult(_db.FindRoleByNormalizedName(normalizedRoleName));
         }
 
         public void Dispose()
         {
+            // No unmanaged resources to release.
         }
     }
 }
