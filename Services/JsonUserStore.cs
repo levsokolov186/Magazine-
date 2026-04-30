@@ -8,7 +8,8 @@ namespace ShoesStore.Services
         IUserPasswordStore<ApplicationUser>,
         IUserRoleStore<ApplicationUser>,
         IUserEmailStore<ApplicationUser>,
-        IUserSecurityStampStore<ApplicationUser>
+        IUserSecurityStampStore<ApplicationUser>,
+        IUserLockoutStore<ApplicationUser>
     {
         private readonly JsonDatabaseService _db;
 
@@ -20,12 +21,21 @@ namespace ShoesStore.Services
         public Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
             if (user.NormalizedUserName != null && _db.FindUserByNormalizedName(user.NormalizedUserName) != null)
             {
                 return Task.FromResult(IdentityResult.Failed(new IdentityError
                 {
                     Code = "DuplicateUserName",
                     Description = "Пользователь с таким именем уже существует."
+                }));
+            }
+            if (user.NormalizedEmail != null && _db.FindUserByNormalizedEmail(user.NormalizedEmail) != null)
+            {
+                return Task.FromResult(IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DuplicateEmail",
+                    Description = "Пользователь с таким email уже существует."
                 }));
             }
             if (string.IsNullOrEmpty(user.Id))
@@ -90,8 +100,13 @@ namespace ShoesStore.Services
         public Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            _db.Save();
-            return Task.FromResult(IdentityResult.Success);
+            return Task.FromResult(_db.SaveUser(user)
+                ? IdentityResult.Success
+                : IdentityResult.Failed(new IdentityError
+                {
+                    Code = "UserNotFound",
+                    Description = "Пользователь не найден."
+                }));
         }
 
         public Task SetPasswordHashAsync(ApplicationUser user, string? passwordHash, CancellationToken cancellationToken)
@@ -113,22 +128,26 @@ namespace ShoesStore.Services
             return Task.FromResult(!string.IsNullOrEmpty(user.PasswordHash));
         }
 
-        public Task AddToRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
+        // ---------- Roles ----------
+
+        public Task AddToRoleAsync(ApplicationUser user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (!string.IsNullOrEmpty(user.UserName))
+            var role = _db.FindRoleByNormalizedName(normalizedRoleName);
+            if (role != null)
             {
-                _db.AddUserRole($"{user.UserName}|{roleName}");
+                _db.AddUserRoleLink(user.Id, role.Id);
             }
             return Task.CompletedTask;
         }
 
-        public Task RemoveFromRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
+        public Task RemoveFromRoleAsync(ApplicationUser user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (!string.IsNullOrEmpty(user.UserName))
+            var role = _db.FindRoleByNormalizedName(normalizedRoleName);
+            if (role != null)
             {
-                _db.RemoveUserRole($"{user.UserName}|{roleName}");
+                _db.RemoveUserRoleLink(user.Id, role.Id);
             }
             return Task.CompletedTask;
         }
@@ -136,36 +155,28 @@ namespace ShoesStore.Services
         public Task<IList<string>> GetRolesAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (string.IsNullOrEmpty(user.UserName))
-            {
-                return Task.FromResult<IList<string>>(new List<string>());
-            }
-            return Task.FromResult<IList<string>>(_db.GetUserRolesByUser(user.UserName));
+            return Task.FromResult<IList<string>>(_db.GetRoleNamesForUser(user.Id));
         }
 
-        public Task<bool> IsInRoleAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
+        public Task<bool> IsInRoleAsync(ApplicationUser user, string normalizedRoleName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (string.IsNullOrEmpty(user.UserName))
-            {
-                return Task.FromResult(false);
-            }
-            return Task.FromResult(_db.ContainsUserRole($"{user.UserName}|{roleName}"));
+            var role = _db.FindRoleByNormalizedName(normalizedRoleName);
+            if (role == null) return Task.FromResult(false);
+            return Task.FromResult(_db.ContainsUserRoleLink(user.Id, role.Id));
         }
 
-        public Task<IList<ApplicationUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+        public Task<IList<ApplicationUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (string.IsNullOrEmpty(roleName))
+            if (string.IsNullOrEmpty(normalizedRoleName))
             {
                 return Task.FromResult<IList<ApplicationUser>>(new List<ApplicationUser>());
             }
-            var userNames = _db.GetUserNamesInRole(roleName);
-            var users = _db.Users
-                .Where(u => u.UserName != null && userNames.Contains(u.UserName))
-                .ToList();
-            return Task.FromResult<IList<ApplicationUser>>(users);
+            return Task.FromResult<IList<ApplicationUser>>(_db.GetUsersInRole(normalizedRoleName));
         }
+
+        // ---------- Email ----------
 
         public Task SetEmailAsync(ApplicationUser user, string? email, CancellationToken cancellationToken)
         {
@@ -212,6 +223,8 @@ namespace ShoesStore.Services
             return Task.CompletedTask;
         }
 
+        // ---------- Security stamp ----------
+
         public Task SetSecurityStampAsync(ApplicationUser user, string stamp, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -223,6 +236,54 @@ namespace ShoesStore.Services
         {
             cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(user.SecurityStamp);
+        }
+
+        // ---------- Lockout ----------
+
+        public Task<DateTimeOffset?> GetLockoutEndDateAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Task.FromResult(user.LockoutEnd);
+        }
+
+        public Task SetLockoutEndDateAsync(ApplicationUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            user.LockoutEnd = lockoutEnd;
+            return Task.CompletedTask;
+        }
+
+        public Task<int> IncrementAccessFailedCountAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            user.AccessFailedCount++;
+            return Task.FromResult(user.AccessFailedCount);
+        }
+
+        public Task ResetAccessFailedCountAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            user.AccessFailedCount = 0;
+            return Task.CompletedTask;
+        }
+
+        public Task<int> GetAccessFailedCountAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Task.FromResult(user.AccessFailedCount);
+        }
+
+        public Task<bool> GetLockoutEnabledAsync(ApplicationUser user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Task.FromResult(user.LockoutEnabled);
+        }
+
+        public Task SetLockoutEnabledAsync(ApplicationUser user, bool enabled, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            user.LockoutEnabled = enabled;
+            return Task.CompletedTask;
         }
 
         public void Dispose()

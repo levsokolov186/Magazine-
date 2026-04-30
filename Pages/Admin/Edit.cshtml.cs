@@ -61,6 +61,12 @@ namespace ShoesStore.Pages.Admin
                 return Page();
             }
 
+            if (Db.ProductNameExists(Product.Name, excludeId: id))
+            {
+                ModelState.AddModelError("Product.Name", "Товар с таким названием уже существует");
+                return Page();
+            }
+
             // Make sure the bound id always wins so URL tampering can't switch products.
             Product.Id = id;
             current.UpdateFrom(Product, SizeEntries);

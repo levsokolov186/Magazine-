@@ -16,11 +16,9 @@ namespace ShoesStore.Pages
             _db = db;
         }
 
-        [BindProperty(SupportsGet = true)]
-        public int? Id { get; set; }
-
         // Surfaced fields the view actually consumes. We project from the
         // Product entity instead of duplicating it on the page model.
+        public int ProductId => _product?.Id ?? 0;
         public string Name => _product?.Name ?? string.Empty;
         public string Category => _product?.Category ?? string.Empty;
         public decimal Price => _product?.Price ?? 0m;
@@ -36,14 +34,9 @@ namespace ShoesStore.Pages
 
         private Product? _product;
 
-        public IActionResult OnGet()
+        public IActionResult OnGet(int id)
         {
-            if (!Id.HasValue)
-            {
-                return NotFound();
-            }
-
-            _product = _db.FindProductById(Id.Value);
+            _product = _db.FindProductById(id);
             return _product is null ? NotFound() : Page();
         }
     }

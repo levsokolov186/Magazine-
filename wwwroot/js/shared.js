@@ -3,7 +3,8 @@
 
     function safeParse(key) {
         try {
-            return JSON.parse(localStorage.getItem(key) || '[]');
+            var parsed = JSON.parse(localStorage.getItem(key) || '[]');
+            return Array.isArray(parsed) ? parsed : [];
         } catch (err) {
             console.error('Failed to parse ' + key + ' from localStorage', err);
             return [];
@@ -26,12 +27,15 @@
     }
 
     function formatPrice(price) {
-        var n = Number(price) || 0;
-        // Always render with non-breaking space as thousand separator for consistency.
-        var rounded = Math.round(n * 100) / 100;
-        var parts = rounded.toString().split('.');
+        var n = Number(price);
+        if (!isFinite(n)) n = 0;
+        // Round half-away-from-zero with epsilon to dodge IEEE 754 .005 errors.
+        var rounded = Math.round((n + Number.EPSILON) * 100) / 100;
+        var parts = rounded.toFixed(2).split('.');
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
-        return parts.join('.') + '\u00A0₽';
+        // Drop trailing ".00" so whole rubles match server formatting.
+        var joined = parts[1] === '00' ? parts[0] : parts.join('.');
+        return joined + '\u00A0₽';
     }
 
     function readCart() { return safeParse('cart'); }
@@ -79,6 +83,14 @@
     window.formatPrice = formatPrice;
     window.escapeHtml = escapeHtml;
     window.updateNavCounts = updateNavCounts;
+
+    // Cross-tab sync: when another tab updates cart or favorites,
+    // refresh badge counts and let pages listening to 'storage' re-render.
+    window.addEventListener('storage', function (e) {
+        if (e.key === 'cart' || e.key === 'favorites') {
+            updateNavCounts();
+        }
+    });
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', updateNavCounts);

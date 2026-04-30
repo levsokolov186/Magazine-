@@ -1,5 +1,6 @@
 @page
 @model ShoesStore.Pages.Admin.CreateModel
+@using System.Globalization
 @{
     ViewData["Title"] = "Создать карточку товара";
 }
@@ -50,7 +51,7 @@
                             </div>
                             <h5 id="previewName" class="text-muted">@(string.IsNullOrEmpty(Model.Product.Name) ? "Название товара" : Model.Product.Name)</h5>
                             <p id="previewCategory" class="text-muted small">@(string.IsNullOrEmpty(Model.Product.Category) ? "Категория" : Model.Product.Category)</p>
-                            <h4 class="fw-bold price-color" id="previewPrice">@Model.Product.Price.ToString("N0").Replace(",", " ") ₽</h4>
+                            <h4 class="fw-bold price-color" id="previewPrice">@Html.Raw(Model.Product.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</h4>
                         </div>
                     </div>
                 </div>

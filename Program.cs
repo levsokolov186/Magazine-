@@ -39,6 +39,10 @@ static void ConfigureIdentityOptions(IdentityOptions options)
     options.Password.RequireUppercase = true;
     options.Password.RequireNonAlphanumeric = false;
     options.User.RequireUniqueEmail = true;
+
+    options.Lockout.AllowedForNewUsers = true;
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
 }
 
 static void ConfigureCookieOptions(CookieAuthenticationOptions options)
@@ -59,7 +63,14 @@ static void SeedDatabase(WebApplication app)
     using var scope = app.Services.CreateScope();
     var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<ApplicationUser>>();
     var jsonDbService = scope.ServiceProvider.GetRequiredService<JsonDatabaseService>();
-    jsonDbService.EnsureSeeded(passwordHasher);
+    var config = app.Configuration.GetSection("Seed");
+
+    jsonDbService.EnsureSeeded(
+        passwordHasher,
+        config["AdminEmail"] ?? "admin@stepstyle.ru",
+        config["AdminPassword"] ?? "Admin123!",
+        config["DefaultUserEmail"] ?? "user@stepstyle.ru",
+        config["DefaultUserPassword"] ?? "User123!");
 }
 
 static void ConfigurePipeline(WebApplication app)
@@ -92,5 +103,14 @@ static async Task SecurityHeadersMiddleware(HttpContext context, Func<Task> next
     headers["X-Frame-Options"] = "DENY";
     headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
     headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+    headers["Content-Security-Policy"] =
+        "default-src 'self'; " +
+        "style-src 'self' 'unsafe-inline'; " +
+        "font-src 'self'; " +
+        "script-src 'self' 'unsafe-inline'; " +
+        "img-src 'self' data:; " +
+        "base-uri 'self'; " +
+        "form-action 'self'; " +
+        "frame-ancestors 'none'";
     await next();
 }

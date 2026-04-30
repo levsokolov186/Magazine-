@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ShoesStore.Models
 {
-    public class ProductInput
+    public class ProductInput : IValidatableObject
     {
         public int Id { get; set; }
 
@@ -20,7 +20,7 @@ namespace ShoesStore.Models
         [Display(Name = "Цена")]
         public decimal Price { get; set; }
 
-        [Range(0, 999999, ErrorMessage = "Старая цена должна быть от 0 до 999999")]
+        [Range(0.01, 999999, ErrorMessage = "Старая цена должна быть от 0.01 до 999999")]
         [Display(Name = "Старая цена")]
         public decimal? OldPrice { get; set; }
 
@@ -42,5 +42,15 @@ namespace ShoesStore.Models
         [StringLength(100, ErrorMessage = "Цвет не должен превышать 100 символов")]
         [Display(Name = "Цвет")]
         public string Color { get; set; } = string.Empty;
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (OldPrice.HasValue && OldPrice.Value <= Price)
+            {
+                yield return new ValidationResult(
+                    "Старая цена должна быть больше текущей цены",
+                    new[] { nameof(OldPrice) });
+            }
+        }
     }
 }

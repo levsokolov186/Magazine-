@@ -1,6 +1,7 @@
 @page
 @model ShoesStore.Pages.Admin.IndexModel
 @using System.Globalization
+@using System.Text.Encodings.Web
 @{
     ViewData["Title"] = "Админ-панель";
 }
@@ -64,11 +65,11 @@
                                     <td class="text-muted">@product.Category</td>
                                     <td>
                                         <span class="fw-bold price-color">
-                                            @product.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", " ") ₽
+                                            @Html.Raw(product.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽
                                         </span>
-                                        @if (product.OldPrice.HasValue)
+                                        @if (product.HasDiscount)
                                         {
-                                            <br><small class="text-muted price-old">@product.OldPrice.Value.ToString("N0", CultureInfo.InvariantCulture).Replace(",", " ") ₽</small>
+                                            <br><small class="text-muted price-old">@Html.Raw(product.OldPrice!.Value.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</small>
                                         }
                                     </td>
                                     <td>
@@ -88,8 +89,8 @@
                                             <i class="bi bi-pencil" aria-hidden="true"></i>
                                             <span class="visually-hidden">Редактировать @product.Name</span>
                                         </a>
-                                        <form method="post" asp-page-handler="Delete" asp-route-id="@product.Id" class="d-inline"
-                                              onsubmit="return confirm('Удалить этот товар?');">
+                                        <form method="post" asp-page-handler="Delete" asp-route-id="@product.Id" class="d-inline js-delete-product"
+                                              data-product-name="@product.Name">
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Удалить">
                                                 <i class="bi bi-trash" aria-hidden="true"></i>
                                                 <span class="visually-hidden">Удалить @product.Name</span>
@@ -114,3 +115,18 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+            document.querySelectorAll('form.js-delete-product').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    var name = form.getAttribute('data-product-name') || 'этот товар';
+                    if (!confirm('Удалить «' + name + '»? Это действие нельзя отменить.')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        })();
+    </script>
+}

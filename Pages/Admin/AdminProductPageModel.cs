@@ -10,6 +10,10 @@ namespace ShoesStore.Pages.Admin
         private const string ActionAdd = "add";
         private const string ActionRemove = "remove";
         private const string ActionToggle = "toggle";
+        private const string ActionSave = "save";
+
+        private const decimal MinSize = 20m;
+        private const decimal MaxSize = 50m;
 
         protected readonly JsonDatabaseService Db;
 
@@ -32,13 +36,32 @@ namespace ShoesStore.Pages.Admin
         /// </summary>
         protected IActionResult? HandleSizeAction(string? action, decimal? newSize)
         {
-            if (string.IsNullOrEmpty(action) || !newSize.HasValue)
+            if (string.IsNullOrEmpty(action) || action == ActionSave)
+            {
+                return null;
+            }
+
+            // Anything other than "save" is a size action.
+            if (action != ActionAdd && action != ActionRemove && action != ActionToggle)
             {
                 return null;
             }
 
             // Size-management actions must not be blocked by product-field validation.
             ModelState.Clear();
+
+            if (!newSize.HasValue)
+            {
+                ModelState.AddModelError(string.Empty, "Укажите размер.");
+                return Page();
+            }
+
+            if (newSize.Value < MinSize || newSize.Value > MaxSize)
+            {
+                ModelState.AddModelError(string.Empty,
+                    $"Размер должен быть от {MinSize} до {MaxSize}.");
+                return Page();
+            }
 
             switch (action)
             {

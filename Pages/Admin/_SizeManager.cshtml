@@ -9,7 +9,7 @@
         <input type="number" id="newSize" name="newSize" class="form-control" step="0.5" min="20" max="50" placeholder="Напр: 37.5" style="width: 120px;" />
     </div>
     <div class="col-auto">
-        <button type="submit" name="action" value="add" class="btn btn-success btn-sm">
+        <button type="submit" name="action" value="add" class="btn btn-success btn-sm" formnovalidate>
             <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Добавить
         </button>
     </div>
@@ -35,9 +35,10 @@
             <tbody>
                 @foreach (var entry in Model.OrderBy(s => s.Size))
                 {
+                    var sizeText = entry.Size.ToString(CultureInfo.InvariantCulture);
                     <tr>
                         <td>
-                            <strong class="fs-5">@entry.Size</strong>
+                            <strong class="fs-5">@sizeText</strong>
                         </td>
                         <td>
                             @if (entry.InStock)
@@ -57,16 +58,18 @@
                             <button type="submit" name="action" value="toggle"
                                     class="btn btn-sm btn-outline-warning me-1" title="Переключить наличие"
                                     formnovalidate
-                                    onclick="document.getElementById('newSize').value='@entry.Size.ToString(CultureInfo.InvariantCulture)'">
+                                    data-size-value="@sizeText"
+                                    data-size-action="toggle">
                                 <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
-                                <span class="visually-hidden">Переключить наличие размера @entry.Size</span>
+                                <span class="visually-hidden">Переключить наличие размера @sizeText</span>
                             </button>
                             <button type="submit" name="action" value="remove"
                                     class="btn btn-sm btn-outline-danger" title="Удалить размер"
                                     formnovalidate
-                                    onclick="document.getElementById('newSize').value='@entry.Size.ToString(CultureInfo.InvariantCulture)'; return confirm('Удалить размер @entry.Size?')">
+                                    data-size-value="@sizeText"
+                                    data-size-action="remove">
                                 <i class="bi bi-trash" aria-hidden="true"></i>
-                                <span class="visually-hidden">Удалить размер @entry.Size</span>
+                                <span class="visually-hidden">Удалить размер @sizeText</span>
                             </button>
                         </td>
                     </tr>
@@ -81,3 +84,20 @@ else
         <i class="bi bi-info-circle me-2" aria-hidden="true"></i>Добавьте размеры для этого товара
     </p>
 }
+
+<script>
+    (function () {
+        document.querySelectorAll('button[data-size-action]').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                var size = btn.getAttribute('data-size-value');
+                var input = document.getElementById('newSize');
+                if (input) input.value = size;
+                if (btn.getAttribute('data-size-action') === 'remove') {
+                    if (!confirm('Удалить размер ' + size + '?')) {
+                        e.preventDefault();
+                    }
+                }
+            });
+        });
+    })();
+</script>

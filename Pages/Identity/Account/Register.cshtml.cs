@@ -85,7 +85,8 @@ namespace ShoesStore.Pages.Identity.Account
         {
             UserName = input.Email,
             Email = input.Email,
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            LockoutEnabled = true
         };
 
         private async Task AssignDefaultRoleAsync(ApplicationUser user)

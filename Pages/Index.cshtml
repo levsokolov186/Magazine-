@@ -34,7 +34,7 @@
                                     {
                                         <span class="badge-sale">@product.DiscountBadge</span>
                                     }
-                                    else
+                                    else if (product.IsNew)
                                     {
                                         <span class="badge-new">Новинка</span>
                                     }
@@ -45,10 +45,10 @@
                                     <p class="product-hint text-muted mb-2"><small><i class="bi bi-hand-index me-1" aria-hidden="true"></i>Нажмите, чтобы выбрать размер</small></p>
                                     <div class="d-flex justify-content-between align-items-center mt-auto">
                                         <div>
-                                            <span class="product-price">@product.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", " ") ₽</span>
-                                            @if (product.OldPrice.HasValue)
+                                            <span class="product-price">@Html.Raw(product.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</span>
+                                            @if (product.HasDiscount)
                                             {
-                                                <br><small class="text-muted price-old">@product.OldPrice.Value.ToString("N0", CultureInfo.InvariantCulture).Replace(",", " ") ₽</small>
+                                                <br><small class="text-muted price-old">@Html.Raw(product.OldPrice!.Value.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</small>
                                             }
                                         </div>
                                         <span class="btn btn-cart" role="presentation">

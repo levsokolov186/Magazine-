@@ -56,11 +56,18 @@ namespace ShoesStore.Pages.Identity.Account
                 Input.Email,
                 Input.Password,
                 Input.RememberMe,
-                lockoutOnFailure: false);
+                lockoutOnFailure: true);
 
             if (result.Succeeded)
             {
                 return LocalRedirect(ReturnUrl);
+            }
+
+            if (result.IsLockedOut)
+            {
+                ModelState.AddModelError(string.Empty,
+                    "Учётная запись временно заблокирована из-за слишком большого числа неудачных попыток входа. Повторите попытку позже.");
+                return Page();
             }
 
             ModelState.AddModelError(string.Empty, "Неверный email или пароль");

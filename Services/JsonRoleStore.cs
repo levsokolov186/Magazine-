@@ -33,8 +33,13 @@ namespace ShoesStore.Services
         public Task<IdentityResult> UpdateAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            _db.Save();
-            return Task.FromResult(IdentityResult.Success);
+            return Task.FromResult(_db.SaveRole(role)
+                ? IdentityResult.Success
+                : IdentityResult.Failed(new IdentityError
+                {
+                    Code = "RoleNotFound",
+                    Description = "Роль не найдена."
+                }));
         }
 
         public Task<IdentityResult> DeleteAsync(IdentityRole role, CancellationToken cancellationToken)

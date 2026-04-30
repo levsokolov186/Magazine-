@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var data = window.PRODUCT_DATA || { name: '', price: 0, emoji: '👠', category: '' };
+    var data = window.PRODUCT_DATA || { id: null, name: '', price: 0, emoji: '👠', category: '' };
     var selectedSize = null;
 
     function selectSize(btn) {
@@ -35,29 +35,34 @@
         return true;
     }
 
-    function flashButton(btn, html, successClass, removeClass) {
-        var original = btn.innerHTML;
-        btn.innerHTML = html;
+    function flashButton(btn, iconClass, text, successClass, removeClass) {
+        var originalHtml = btn.innerHTML;
+        var originalDisabled = btn.disabled;
+        // Build flash content with textContent so user-derived strings can never be HTML.
+        btn.innerHTML = '';
+        var icon = document.createElement('i');
+        icon.className = iconClass + ' me-2';
+        icon.setAttribute('aria-hidden', 'true');
+        btn.appendChild(icon);
+        btn.appendChild(document.createTextNode(text));
         if (successClass) btn.classList.add(successClass);
         if (removeClass) btn.classList.remove(removeClass);
+        btn.disabled = true;
         setTimeout(function () {
-            btn.innerHTML = original;
+            btn.innerHTML = originalHtml;
             if (successClass) btn.classList.remove(successClass);
             if (removeClass) btn.classList.add(removeClass);
+            btn.disabled = originalDisabled;
         }, 2000);
     }
 
     function onAddToCart() {
         if (!validateSize()) return;
         if (typeof window.addToCart !== 'function') return;
-        window.addToCart(data.name, data.price, selectedSize, data.emoji, function () {
+        window.addToCart(data.id, data.name, data.price, selectedSize, data.emoji, function () {
             var btn = document.getElementById('addToCartBtn');
             if (btn) {
-                flashButton(
-                    btn,
-                    '<i class="bi bi-check-lg me-2" aria-hidden="true"></i>Добавлено! (размер ' + selectedSize + ')',
-                    'btn-success'
-                );
+                flashButton(btn, 'bi bi-check-lg', 'Добавлено! (размер ' + selectedSize + ')', 'btn-success');
             }
         });
     }
@@ -65,15 +70,10 @@
     function onAddToFav() {
         if (!validateSize()) return;
         if (typeof window.addToFavorites !== 'function') return;
-        window.addToFavorites(data.name, data.price, selectedSize, data.emoji, data.category);
+        window.addToFavorites(data.id, data.name, data.price, selectedSize, data.emoji, data.category);
         var btn = document.getElementById('addToFavBtn');
         if (btn) {
-            flashButton(
-                btn,
-                '<i class="bi bi-check-lg me-2" aria-hidden="true"></i>В избранном!',
-                'btn-success',
-                'btn-outline-danger'
-            );
+            flashButton(btn, 'bi bi-check-lg', 'В избранном!', 'btn-success', 'btn-outline-danger');
         }
     }
 

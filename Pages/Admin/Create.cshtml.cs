@@ -33,6 +33,12 @@ namespace ShoesStore.Pages.Admin
                 return Page();
             }
 
+            if (Db.ProductNameExists(Product.Name))
+            {
+                ModelState.AddModelError("Product.Name", "Товар с таким названием уже существует");
+                return Page();
+            }
+
             var product = Models.Product.FromInput(Product, SizeEntries);
             Db.AddProduct(product);
 

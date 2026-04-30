@@ -6,6 +6,7 @@ namespace ShoesStore.Models
     {
         private const string DefaultEmoji = "👠";
         private const string NewBadge = "Новинка";
+        private static readonly TimeSpan NewProductWindow = TimeSpan.FromDays(30);
 
         public int Id { get; set; }
 
@@ -47,20 +48,31 @@ namespace ShoesStore.Models
         public string Color { get; set; } = string.Empty;
 
         [Display(Name = "Создан")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
         [Display(Name = "Изменён")]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; }
 
         public List<ProductSize> Sizes { get; set; } = new();
 
         public bool HasDiscount =>
             OldPrice.HasValue && OldPrice.Value > 0 && OldPrice.Value > Price;
 
-        public string DiscountBadge =>
-            HasDiscount
-                ? $"-{Math.Round((1 - (double)Price / (double)OldPrice!.Value) * 100)}%"
-                : NewBadge;
+        public bool IsNew =>
+            CreatedAt != default && (DateTime.UtcNow - CreatedAt) <= NewProductWindow;
+
+        public string DiscountBadge
+        {
+            get
+            {
+                if (HasDiscount)
+                {
+                    var pct = (int)Math.Floor((1m - Price / OldPrice!.Value) * 100m);
+                    if (pct > 0) return $"-{pct}%";
+                }
+                return IsNew ? NewBadge : string.Empty;
+            }
+        }
 
         public static Product FromInput(ProductInput input, IEnumerable<ProductSize> sizes)
         {
@@ -93,6 +105,8 @@ namespace ShoesStore.Models
                 CreatedAt = now;
             }
         }
+
+        public bool ShouldShowBadge => HasDiscount || IsNew;
 
         private static List<ProductSize> CloneSizes(IEnumerable<ProductSize> sizes) =>
             sizes.Select(s => new ProductSize { Size = s.Size, InStock = s.InStock }).ToList();

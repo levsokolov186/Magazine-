@@ -1,10 +1,9 @@
-@page
+@page "{id:int}"
 @model ProductModel
 @using System.Globalization
 @using System.Text.Encodings.Web
 @{
     ViewData["Title"] = Model.Name;
-    var savings = Model.OldPrice.HasValue ? Model.OldPrice.Value - Model.Price : 0m;
     var nameJs = JavaScriptEncoder.Default.Encode(Model.Name);
     var emojiJs = JavaScriptEncoder.Default.Encode(Model.Emoji);
     var categoryJs = JavaScriptEncoder.Default.Encode(Model.Category);
@@ -39,15 +38,16 @@
             <div class="mb-4">
                 @if (Model.HasDiscount)
                 {
+                    var savings = Model.OldPrice!.Value - Model.Price;
                     <div class="d-flex align-items-baseline gap-3 mb-2">
-                        <span class="fs-2 fw-bold price-color">@Model.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", " ") ₽</span>
-                        <span class="fs-5 text-muted price-old">@Model.OldPrice!.Value.ToString("N0", CultureInfo.InvariantCulture).Replace(",", " ") ₽</span>
+                        <span class="fs-2 fw-bold price-color">@Html.Raw(Model.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</span>
+                        <span class="fs-5 text-muted price-old">@Html.Raw(Model.OldPrice!.Value.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</span>
                     </div>
-                    <span class="badge bg-danger fs-6">Выгода @savings.ToString("N0", CultureInfo.InvariantCulture).Replace(",", " ") ₽</span>
+                    <span class="badge bg-danger fs-6">Выгода @Html.Raw(savings.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</span>
                 }
                 else
                 {
-                    <span class="fs-2 fw-bold price-color">@Model.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", " ") ₽</span>
+                    <span class="fs-2 fw-bold price-color">@Html.Raw(Model.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</span>
                 }
             </div>
 
@@ -61,7 +61,7 @@
                         @foreach (var size in Model.Sizes.OrderBy(s => s.Size))
                         {
                             <button type="button" class="btn-size" role="radio" aria-checked="false" data-size="@size.Size.ToString(CultureInfo.InvariantCulture)">
-                                @size.Size
+                                @size.Size.ToString(CultureInfo.InvariantCulture)
                             </button>
                         }
                     }
@@ -145,6 +145,7 @@
 @section Scripts {
     <script>
         window.PRODUCT_DATA = {
+            id: @Model.ProductId,
             name: "@Html.Raw(nameJs)",
             price: @Model.Price.ToString(CultureInfo.InvariantCulture),
             emoji: "@Html.Raw(emojiJs)",

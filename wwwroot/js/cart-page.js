@@ -158,10 +158,9 @@
             alert('Корзина пуста.');
             return;
         }
-        var total = document.getElementById('totalPrice').textContent;
-        alert('Спасибо за заказ! Сумма: ' + total);
-        ss.writeCart([]);
-        renderCart();
+        // Real checkout/order processing is not implemented yet — make that
+        // explicit instead of pretending the order was placed and clearing the cart.
+        alert('Оформление заказа пока недоступно. Свяжитесь с нами, чтобы оформить покупку — корзина сохранена.');
     }
 
     function init() {
@@ -169,6 +168,10 @@
         if (clearBtn) clearBtn.addEventListener('click', clearCart);
         var checkoutBtn = document.getElementById('checkoutBtn');
         if (checkoutBtn) checkoutBtn.addEventListener('click', checkout);
+        // Re-render when another tab edits the cart.
+        window.addEventListener('storage', function (e) {
+            if (e.key === 'cart') renderCart();
+        });
         renderCart();
     }
 

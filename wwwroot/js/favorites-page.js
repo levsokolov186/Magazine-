@@ -33,7 +33,7 @@
         removeBtn.addEventListener('click', function (event) {
             event.stopPropagation();
             event.preventDefault();
-            removeFavoriteByName(name);
+            removeFavoriteGroup(group);
         });
         imageBox.appendChild(removeBtn);
 
@@ -46,23 +46,45 @@
         title.textContent = name;
         info.appendChild(title);
 
+        var sortedItems = group.items.slice().sort(function (a, b) {
+            var na = Number(a.size), nb = Number(b.size);
+            if (!isNaN(na) && !isNaN(nb)) return na - nb;
+            return String(a.size).localeCompare(String(b.size));
+        });
+
         var sizesP = document.createElement('p');
-        sizesP.className = 'product-category';
-        sizesP.appendChild(document.createTextNode('Размеры: '));
-        var strong = document.createElement('strong');
-        var sortedSizes = group.items
-            .map(function (i) { return Number(i.size); })
-            .filter(function (s) { return !isNaN(s); })
-            .sort(function (a, b) { return a - b; })
-            .map(function (s) { return String(s); });
-        if (!sortedSizes.length) {
-            sortedSizes = group.items.map(function (i) { return String(i.size); });
-        }
-        strong.textContent = sortedSizes.join(', ');
-        sizesP.appendChild(strong);
+        sizesP.className = 'product-category mb-2';
+        sizesP.textContent = 'Выберите размер для добавления в корзину:';
         info.appendChild(sizesP);
 
-        var firstItem = group.items[0];
+        var sizeGroup = document.createElement('div');
+        sizeGroup.className = 'd-flex flex-wrap gap-2 mb-3';
+        sizeGroup.setAttribute('role', 'radiogroup');
+        sizeGroup.setAttribute('aria-label', 'Размер для ' + name);
+        var selectedSize = sortedItems.length ? String(sortedItems[0].size) : null;
+
+        sortedItems.forEach(function (it, idx) {
+            var sBtn = document.createElement('button');
+            sBtn.type = 'button';
+            sBtn.className = 'btn btn-sm btn-outline-secondary';
+            if (idx === 0) sBtn.classList.add('active');
+            sBtn.setAttribute('role', 'radio');
+            sBtn.setAttribute('aria-checked', idx === 0 ? 'true' : 'false');
+            sBtn.textContent = String(it.size);
+            sBtn.addEventListener('click', function () {
+                selectedSize = String(it.size);
+                Array.prototype.forEach.call(sizeGroup.children, function (child) {
+                    child.classList.remove('active');
+                    child.setAttribute('aria-checked', 'false');
+                });
+                sBtn.classList.add('active');
+                sBtn.setAttribute('aria-checked', 'true');
+            });
+            sizeGroup.appendChild(sBtn);
+        });
+        info.appendChild(sizeGroup);
+
+        var firstItem = sortedItems[0];
         var bottom = document.createElement('div');
         bottom.className = 'd-flex justify-content-between align-items-center mt-auto';
         info.appendChild(bottom);
@@ -79,34 +101,50 @@
         cartBtn.addEventListener('click', function (event) {
             event.stopPropagation();
             event.preventDefault();
-            addToCartFromFavorites(name, firstItem.price, firstItem.size, group.emoji);
+            var match = null;
+            for (var i = 0; i < sortedItems.length; i++) {
+                if (String(sortedItems[i].size) === String(selectedSize)) {
+                    match = sortedItems[i];
+                    break;
+                }
+            }
+            if (!match) match = firstItem;
+            addToCartFromFavorites(match.id, name, match.price, match.size, group.emoji);
         });
         bottom.appendChild(cartBtn);
 
-        // Make the whole card open the product (best-effort: we don't know the product id from
-        // localStorage, so we link by name search via the catalog page).
         card.style.cursor = 'default';
 
         return col;
     }
 
-    function removeFavoriteByName(name) {
+    function removeFavoriteGroup(group) {
+        var ids = {};
+        var names = {};
+        group.items.forEach(function (it) {
+            if (it.id != null) ids[Number(it.id)] = true;
+            else names[String(group.name)] = true;
+        });
         var favorites = ss.readFavorites().filter(function (item) {
-            return item.name !== name;
+            if (item.id != null && ids[Number(item.id)]) return false;
+            if (item.id == null && names[String(item.name)]) return false;
+            return true;
         });
         ss.writeFavorites(favorites);
+        ss.updateNavCounts();
         renderFavorites();
     }
 
     function clearAllFavorites() {
         if (!confirm('Удалить всё из избранного?')) return;
         ss.writeFavorites([]);
+        ss.updateNavCounts();
         renderFavorites();
     }
 
-    function addToCartFromFavorites(name, price, size, emoji) {
+    function addToCartFromFavorites(id, name, price, size, emoji) {
         if (typeof window.addToCart !== 'function') return;
-        window.addToCart(name, price, size, emoji, function () {
+        window.addToCart(id, name, price, size, emoji, function () {
             showToast(name + ' (размер ' + size + ') добавлен в корзину!');
         });
     }
@@ -155,10 +193,11 @@
         for (var i = 0; i < favorites.length; i++) {
             var item = favorites[i];
             if (!grouped[item.name]) {
-                grouped[item.name] = { items: [], emoji: item.emoji || '👠' };
+                grouped[item.name] = { name: item.name, items: [], emoji: item.emoji || '👠' };
                 order.push(item.name);
             }
             grouped[item.name].items.push({
+                id: item.id != null ? Number(item.id) : null,
                 size: item.size,
                 price: Number(item.price) || 0
             });
@@ -174,6 +213,10 @@
     function init() {
         var clearBtn = document.getElementById('clearFavoritesBtn');
         if (clearBtn) clearBtn.addEventListener('click', clearAllFavorites);
+        // Cross-tab sync: re-render when another tab updates favorites or cart.
+        window.addEventListener('storage', function (e) {
+            if (e.key === 'favorites' || e.key === 'cart') renderFavorites();
+        });
         renderFavorites();
     }
 

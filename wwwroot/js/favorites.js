@@ -1,14 +1,27 @@
 (function () {
     'use strict';
 
-    window.addToFavorites = function (name, price, size, emoji, category) {
+    function sameItem(a, b) {
+        if (a.id != null && b.id != null) {
+            return Number(a.id) === Number(b.id) && String(a.size) === String(b.size);
+        }
+        return a.name === b.name && String(a.size) === String(b.size);
+    }
+
+    window.addToFavorites = function (id, name, price, size, emoji, category) {
         var favorites = window.StepStyle.readFavorites();
+        var candidate = {
+            id: id != null ? Number(id) : null,
+            name: name,
+            size: size
+        };
         for (var i = 0; i < favorites.length; i++) {
-            if (favorites[i].name === name && String(favorites[i].size) === String(size)) {
+            if (sameItem(favorites[i], candidate)) {
                 return; // already favorited
             }
         }
         favorites.push({
+            id: candidate.id,
             name: name,
             size: size,
             price: Number(price) || 0,
@@ -19,10 +32,15 @@
         window.StepStyle.updateNavCounts();
     };
 
-    window.isFavorited = function (name, size) {
+    window.isFavorited = function (id, name, size) {
         var favorites = window.StepStyle.readFavorites();
+        var candidate = {
+            id: id != null ? Number(id) : null,
+            name: name,
+            size: size
+        };
         for (var i = 0; i < favorites.length; i++) {
-            if (favorites[i].name === name && String(favorites[i].size) === String(size)) {
+            if (sameItem(favorites[i], candidate)) {
                 return true;
             }
         }
