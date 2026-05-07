@@ -1,49 +1,95 @@
-﻿<!DOCTYPE html>
+@inject Microsoft.AspNetCore.Identity.SignInManager<ShoesStore.Models.ApplicationUser> SignInManager
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+    <meta name="description" content="StepStyle — каталог женской обуви с удобной корзиной и избранным." />
+    <meta name="theme-color" content="#667eea" />
+    <title>@(ViewData["Title"] ?? "Страница") — StepStyle</title>
+    <link rel="icon" href="~/favicon.ico" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ShoesStore.styles.css" asp-append-version="true" />
+    <script src="~/js/theme-init.js" asp-append-version="true"></script>
 </head>
 <body>
+    <noscript>
+        <div class="container py-3" role="alert" style="background: #fff3cd; color: #664d03; border: 1px solid #ffe69c;">
+            Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.
+        </div>
+    </noscript>
     <header>
-        <nav class="navbar navbar-expand-lg">
+        <nav class="navbar navbar-expand-lg" aria-label="Основная навигация">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-page="/Index">
-                    <i class="bi bi-handbag"></i> StepStyle
+                    <i class="bi bi-handbag" aria-hidden="true"></i> StepStyle
                 </a>
-                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain"
+                        aria-expanded="false" aria-label="Открыть меню">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
+                <div id="navbarMain" class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Index">
-                                <i class="bi bi-grid-3x3-gap-fill"></i> Каталог
+                                <i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i> Каталог
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Favorites">
-                                <i class="bi bi-heart-fill"></i> Избранное
-                                <span class="badge bg-danger rounded-pill" id="favoritesCount">0</span>
+                                <i class="bi bi-heart-fill" aria-hidden="true"></i> Избранное
+                                <span class="badge bg-danger rounded-pill" id="favoritesCount" aria-label="Количество товаров в избранном">0</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Cart">
-                                <i class="bi bi-cart-fill"></i> Корзина
-                                <span class="badge bg-primary rounded-pill" id="cartCount">0</span>
+                                <i class="bi bi-cart-fill" aria-hidden="true"></i> Корзина
+                                <span class="badge bg-primary rounded-pill" id="cartCount" aria-label="Количество товаров в корзине">0</span>
                             </a>
                         </li>
                     </ul>
                     <ul class="navbar-nav align-items-center">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-page="/Admin/Index">
+                                        <i class="bi bi-gear-fill" aria-hidden="true"></i> Админ-панель
+                                    </a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <span class="nav-link text-muted">
+                                    <i class="bi bi-person-circle" aria-hidden="true"></i> @User.Identity?.Name
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <form method="post" asp-page="/Identity/Account/Logout" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm nav-link">
+                                        <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Выйти
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Identity/Account/Login">
+                                    <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Войти
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Identity/Account/Register">
+                                    <i class="bi bi-person-plus" aria-hidden="true"></i> Регистрация
+                                </a>
+                            </li>
+                        }
                         <li class="nav-item">
-                            <button class="btn-theme-toggle" id="themeToggle" title="Переключить тему">
-                                <i class="bi bi-moon-fill" id="themeIcon"></i>
+                            <button class="btn-theme-toggle" id="themeToggle" type="button"
+                                    aria-label="Переключить тему" title="Переключить тему">
+                                <i class="bi bi-moon-fill" id="themeIcon" aria-hidden="true"></i>
                             </button>
                         </li>
                     </ul>
@@ -51,11 +97,9 @@
             </div>
         </nav>
     </header>
-    <div class="container-fluid p-0">
-        <main role="main">
-            @RenderBody()
-        </main>
-    </div>
+    <main>
+        @RenderBody()
+    </main>
 
     <footer class="footer">
         <div class="container">
@@ -65,60 +109,11 @@
         </div>
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    
-    <script>
-        // Update counts on every page load
-        function updateNavCounts() {
-            var cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            var favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-            
-            var cartCount = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
-            $('#cartCount').text(cartCount);
-            $('#favoritesCount').text(favorites.length);
-        }
-        
-        // Theme toggle
-        (function() {
-            var currentTheme = localStorage.getItem('theme') || 'light';
-            var html = document.documentElement;
-            var icon = document.getElementById('themeIcon');
-            
-            if (currentTheme === 'dark') {
-                html.setAttribute('data-theme', 'dark');
-                if (icon) {
-                    icon.classList.remove('bi-moon-fill');
-                    icon.classList.add('bi-sun-fill');
-                }
-            }
-            
-            var toggle = document.getElementById('themeToggle');
-            if (toggle) {
-                toggle.addEventListener('click', function() {
-                    var theme = html.getAttribute('data-theme');
-                    if (theme === 'dark') {
-                        html.removeAttribute('data-theme');
-                        localStorage.setItem('theme', 'light');
-                        if (icon) {
-                            icon.classList.remove('bi-sun-fill');
-                            icon.classList.add('bi-moon-fill');
-                        }
-                    } else {
-                        html.setAttribute('data-theme', 'dark');
-                        localStorage.setItem('theme', 'dark');
-                        if (icon) {
-                            icon.classList.remove('bi-moon-fill');
-                            icon.classList.add('bi-sun-fill');
-                        }
-                    }
-                });
-            }
-            
-            updateNavCounts();
-        })();
-    </script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/js/shared.js" asp-append-version="true"></script>
+    <script src="~/js/cart.js" asp-append-version="true"></script>
+    <script src="~/js/favorites.js" asp-append-version="true"></script>
+    <script src="~/js/theme.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
