@@ -6,20 +6,19 @@ namespace ShoesStore.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly JsonDatabaseService _dbService;
+        private readonly IProductService _products;
 
-        public IndexModel(JsonDatabaseService dbService)
+        public IndexModel(IProductService products)
         {
-            _dbService = dbService;
+            _products = products;
         }
 
         public IList<Product> Products { get; set; } = new List<Product>();
 
-        public void OnGet()
+        public async Task OnGetAsync(CancellationToken cancellationToken)
         {
-            Products = _dbService.Products
-                .OrderBy(p => p.Name)
-                .ToList();
+            var all = await _products.GetProductsAsync(cancellationToken);
+            Products = all.OrderBy(p => p.Name).ToList();
         }
     }
 }

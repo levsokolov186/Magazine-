@@ -8,11 +8,11 @@ namespace ShoesStore.Pages.Admin
     [Authorize(Roles = "Admin")]
     public class EditModel : AdminProductPageModel
     {
-        public EditModel(JsonDatabaseService db) : base(db) { }
+        public EditModel(IProductService products) : base(products) { }
 
-        public IActionResult OnGet(int id)
+        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken)
         {
-            var product = Db.FindProductById(id);
+            var product = await Products.FindProductByIdAsync(id, cancellationToken);
 
             if (product == null)
             {
@@ -43,10 +43,14 @@ namespace ShoesStore.Pages.Admin
             return Page();
         }
 
-        public IActionResult OnPost(int id, string? action, decimal? newSize)
+        public async Task<IActionResult> OnPostAsync(
+            int id,
+            string? action,
+            decimal? newSize,
+            CancellationToken cancellationToken)
         {
             // Re-load CreatedAt for sidebar in case we re-render the page.
-            var current = Db.FindProductById(id);
+            var current = await Products.FindProductByIdAsync(id, cancellationToken);
             if (current == null)
             {
                 return NotFound();
@@ -61,7 +65,7 @@ namespace ShoesStore.Pages.Admin
                 return Page();
             }
 
-            if (Db.ProductNameExists(Product.Name, excludeId: id))
+            if (await Products.ProductNameExistsAsync(Product.Name, excludeId: id, cancellationToken: cancellationToken))
             {
                 ModelState.AddModelError("Product.Name", "Товар с таким названием уже существует");
                 return Page();
@@ -69,8 +73,7 @@ namespace ShoesStore.Pages.Admin
 
             // Make sure the bound id always wins so URL tampering can't switch products.
             Product.Id = id;
-            current.UpdateFrom(Product, SizeEntries);
-            if (!Db.SaveProduct(current))
+            if (!await Products.UpdateProductAsync(id, Product, SizeEntries, cancellationToken))
             {
                 return NotFound();
             }

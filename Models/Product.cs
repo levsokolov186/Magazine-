@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShoesStore.Models
 {
@@ -55,12 +56,15 @@ namespace ShoesStore.Models
 
         public List<ProductSize> Sizes { get; set; } = new();
 
+        [NotMapped]
         public bool HasDiscount =>
             OldPrice.HasValue && OldPrice.Value > 0 && OldPrice.Value > Price;
 
+        [NotMapped]
         public bool IsNew =>
             CreatedAt != default && (DateTime.UtcNow - CreatedAt) <= NewProductWindow;
 
+        [NotMapped]
         public string DiscountBadge
         {
             get
@@ -106,6 +110,7 @@ namespace ShoesStore.Models
             }
         }
 
+        [NotMapped]
         public bool ShouldShowBadge => HasDiscount || IsNew;
 
         private static List<ProductSize> CloneSizes(IEnumerable<ProductSize> sizes) =>

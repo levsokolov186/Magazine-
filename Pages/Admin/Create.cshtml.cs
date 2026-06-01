@@ -8,7 +8,7 @@ namespace ShoesStore.Pages.Admin
     [Authorize(Roles = "Admin")]
     public class CreateModel : AdminProductPageModel
     {
-        public CreateModel(JsonDatabaseService db) : base(db) { }
+        public CreateModel(IProductService products) : base(products) { }
 
         public IActionResult OnGet()
         {
@@ -23,7 +23,10 @@ namespace ShoesStore.Pages.Admin
             return Page();
         }
 
-        public IActionResult OnPost(string? action, decimal? newSize)
+        public async Task<IActionResult> OnPostAsync(
+            string? action,
+            decimal? newSize,
+            CancellationToken cancellationToken)
         {
             var sizeResult = HandleSizeAction(action, newSize);
             if (sizeResult != null) return sizeResult;
@@ -33,14 +36,14 @@ namespace ShoesStore.Pages.Admin
                 return Page();
             }
 
-            if (Db.ProductNameExists(Product.Name))
+            if (await Products.ProductNameExistsAsync(Product.Name, cancellationToken: cancellationToken))
             {
                 ModelState.AddModelError("Product.Name", "Товар с таким названием уже существует");
                 return Page();
             }
 
             var product = Models.Product.FromInput(Product, SizeEntries);
-            Db.AddProduct(product);
+            await Products.AddProductAsync(product, cancellationToken);
 
             TempData["SuccessMessage"] = "Товар успешно создан";
             return RedirectToPage("Index");

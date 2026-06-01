@@ -9,11 +9,11 @@ namespace ShoesStore.Pages
     {
         private const string DefaultEmoji = "👠";
 
-        private readonly JsonDatabaseService _db;
+        private readonly IProductService _products;
 
-        public ProductModel(JsonDatabaseService db)
+        public ProductModel(IProductService products)
         {
-            _db = db;
+            _products = products;
         }
 
         // Surfaced fields the view actually consumes. We project from the
@@ -34,9 +34,9 @@ namespace ShoesStore.Pages
 
         private Product? _product;
 
-        public IActionResult OnGet(int id)
+        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken)
         {
-            _product = _db.FindProductById(id);
+            _product = await _products.FindProductByIdAsync(id, cancellationToken);
             return _product is null ? NotFound() : Page();
         }
     }

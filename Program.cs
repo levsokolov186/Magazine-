@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
-using ShoesStore.Services;
+using Microsoft.EntityFrameworkCore;
+using ShoesStore.Data;
 using ShoesStore.Models;
+using ShoesStore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +11,7 @@ ConfigureServices(builder);
 
 var app = builder.Build();
 
-SeedDatabase(app);
+await SeedDatabaseAsync(app);
 ConfigurePipeline(app);
 
 app.Run();
@@ -19,16 +21,28 @@ static void ConfigureServices(WebApplicationBuilder builder)
 {
     builder.Services.AddRazorPages();
 
-    builder.Services.AddSingleton<JsonDatabaseService>(sp =>
-        new JsonDatabaseService(Path.Combine(builder.Environment.ContentRootPath, "data.json")));
+    var connectionString =
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException(
+            "Connection string 'DefaultConnection' is not configured. " +
+            "Add it to appsettings.json or set the ConnectionStrings__DefaultConnection env var.");
+
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(connectionString, npgsql =>
+        {
+            npgsql.MigrationsHistoryTable("__ef_migrations_history");
+            npgsql.EnableRetryOnFailure(maxRetryCount: 3);
+        }));
 
     builder.Services
         .AddIdentity<ApplicationUser, IdentityRole>(ConfigureIdentityOptions)
-        .AddUserStore<JsonUserStore>()
-        .AddRoleStore<JsonRoleStore>()
+        .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 
     builder.Services.ConfigureApplicationCookie(ConfigureCookieOptions);
+
+    builder.Services.AddScoped<IProductService, ProductService>();
+    builder.Services.AddScoped<DatabaseSeeder>();
 }
 
 static void ConfigureIdentityOptions(IdentityOptions options)
@@ -57,20 +71,21 @@ static void ConfigureCookieOptions(CookieAuthenticationOptions options)
     options.SlidingExpiration = true;
 }
 
-// Seed before serving any requests so the data is ready and seed errors fail fast.
-static void SeedDatabase(WebApplication app)
+// Apply pending migrations and seed before serving any requests so the data
+// is ready and any seed/migration error fails fast.
+static async Task SeedDatabaseAsync(WebApplication app)
 {
     using var scope = app.Services.CreateScope();
-    var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<ApplicationUser>>();
-    var jsonDbService = scope.ServiceProvider.GetRequiredService<JsonDatabaseService>();
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
     var config = app.Configuration.GetSection("Seed");
 
-    jsonDbService.EnsureSeeded(
-        passwordHasher,
-        config["AdminEmail"] ?? "admin@stepstyle.ru",
-        config["AdminPassword"] ?? "Admin123!",
-        config["DefaultUserEmail"] ?? "user@stepstyle.ru",
-        config["DefaultUserPassword"] ?? "User123!");
+    var options = new DatabaseSeeder.SeedOptions(
+        AdminEmail: config["AdminEmail"] ?? "admin@stepstyle.ru",
+        AdminPassword: config["AdminPassword"] ?? "Admin123!",
+        DefaultUserEmail: config["DefaultUserEmail"] ?? "user@stepstyle.ru",
+        DefaultUserPassword: config["DefaultUserPassword"] ?? "User123!");
+
+    await seeder.SeedAsync(options);
 }
 
 static void ConfigurePipeline(WebApplication app)

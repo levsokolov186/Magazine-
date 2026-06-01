@@ -15,11 +15,11 @@ namespace ShoesStore.Pages.Admin
         private const decimal MinSize = 20m;
         private const decimal MaxSize = 50m;
 
-        protected readonly JsonDatabaseService Db;
+        protected readonly IProductService Products;
 
-        protected AdminProductPageModel(JsonDatabaseService db)
+        protected AdminProductPageModel(IProductService products)
         {
-            Db = db;
+            Products = products;
         }
 
         [BindProperty]
