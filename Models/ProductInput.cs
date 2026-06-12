@@ -43,6 +43,8 @@ namespace ShoesStore.Models
         [Display(Name = "Цвет")]
         public string Color { get; set; } = string.Empty;
 
+        public List<ProductSize> Sizes { get; set; } = new();
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (OldPrice.HasValue && OldPrice.Value <= Price)
@@ -51,6 +53,57 @@ namespace ShoesStore.Models
                     "Старая цена должна быть больше текущей цены",
                     new[] { nameof(OldPrice) });
             }
+
+            if (Sizes != null)
+            {
+                var duplicates = Sizes
+                    .GroupBy(s => s.Size)
+                    .Where(g => g.Count() > 1)
+                    .Select(g => g.Key)
+                    .ToList();
+                if (duplicates.Any())
+                {
+                    yield return new ValidationResult(
+                        $"Присутствуют дублирующиеся размеры: {string.Join(", ", duplicates)}",
+                        new[] { nameof(Sizes) });
+                }
+            }
+        }
+
+        public Product ToEntity()
+        {
+            return new Product
+            {
+                Id = Id,
+                Name = Name,
+                Description = Description,
+                Price = Price,
+                OldPrice = OldPrice,
+                Emoji = Emoji,
+                Category = Category,
+                Material = Material,
+                Color = Color,
+                Sizes = Sizes?.Select(s => new ProductSize { Size = s.Size, InStock = s.InStock }).ToList() ?? new List<ProductSize>(),
+                UpdatedAt = DateTime.UtcNow
+            };
+        }
+
+        public static ProductInput FromEntity(Product product)
+        {
+            ArgumentNullException.ThrowIfNull(product);
+            return new ProductInput
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                OldPrice = product.OldPrice,
+                Emoji = product.Emoji,
+                Category = product.Category,
+                Material = product.Material,
+                Color = product.Color,
+                Sizes = product.Sizes?.Select(s => new ProductSize { Size = s.Size, InStock = s.InStock }).ToList() ?? new List<ProductSize>()
+            };
         }
     }
 }

@@ -3,101 +3,225 @@
 
 <div class="row g-2 align-items-end mb-4">
     <div class="col-auto">
-        <label class="form-label" for="newSize">Добавить размер:</label>
+        <label class="form-label" for="newSizeInput">Добавить размер:</label>
     </div>
     <div class="col-auto">
-        <input type="number" id="newSize" name="newSize" class="form-control" step="0.5" min="20" max="50" placeholder="Напр: 37.5" style="width: 120px;" />
+        <input type="number" id="newSizeInput" class="form-control" step="0.5" min="20" max="50" placeholder="Напр: 37.5" style="width: 120px;" />
     </div>
     <div class="col-auto">
-        <button type="submit" name="action" value="add" class="btn btn-success btn-sm" formnovalidate>
+        <button type="button" id="btnAddSize" class="btn btn-success btn-sm">
             <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Добавить
         </button>
     </div>
 </div>
 
-@for (var i = 0; i < Model.Count; i++)
-{
-    <input type="hidden" name="SizeEntries[@i].Size" value="@Model[i].Size.ToString(CultureInfo.InvariantCulture)" />
-    <input type="hidden" name="SizeEntries[@i].InStock" value="@Model[i].InStock.ToString().ToLowerInvariant()" />
-}
+<div id="sizeHiddenInputsContainer">
+    @for (var i = 0; i < Model.Count; i++)
+    {
+        var sizeText = Model[i].Size.ToString(CultureInfo.InvariantCulture);
+        var key = sizeText.Replace(".", "_");
+        <div class="size-item-inputs" data-size-key="@key">
+            <input type="hidden" name="Product.Sizes.Index" value="@key" />
+            <input type="hidden" name="Product.Sizes[@key].Size" value="@sizeText" />
+            <input type="hidden" name="Product.Sizes[@key].InStock" value="@Model[i].InStock.ToString().ToLowerInvariant()" />
+        </div>
+    }
+</div>
 
-@if (Model.Count > 0)
-{
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="bg-light">
-                <tr>
-                    <th>Размер</th>
-                    <th>Статус</th>
-                    <th class="text-end">Действия</th>
+<div class="table-responsive" id="sizeTableContainer" style="@(Model.Count > 0 ? "" : "display: none;")">
+    <table class="table table-hover align-middle">
+        <thead class="bg-light">
+            <tr>
+                <th>Размер</th>
+                <th>Статус</th>
+                <th class="text-end">Действия</th>
+            </tr>
+        </thead>
+        <tbody id="sizeTableBody">
+            @foreach (var entry in Model.OrderBy(s => s.Size))
+            {
+                var sizeText = entry.Size.ToString(CultureInfo.InvariantCulture);
+                var key = sizeText.Replace(".", "_");
+                <tr data-size-key="@key">
+                    <td>
+                        <strong class="fs-5">@sizeText</strong>
+                    </td>
+                    <td class="size-status-cell">
+                        @if (entry.InStock)
+                        {
+                            <span class="badge bg-success fs-6">
+                                <i class="bi bi-check-lg me-1" aria-hidden="true"></i>В наличии
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary fs-6">
+                                <i class="bi bi-x-lg me-1" aria-hidden="true"></i>Нет в наличии
+                            </span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-warning me-1 btn-toggle-size" title="Переключить наличие" data-size-key="@key">
+                            <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+                            <span class="visually-hidden">Переключить наличие размера @sizeText</span>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-size" title="Удалить размер" data-size-key="@key" data-size-text="@sizeText">
+                            <i class="bi bi-trash" aria-hidden="true"></i>
+                            <span class="visually-hidden">Удалить размер @sizeText</span>
+                        </button>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var entry in Model.OrderBy(s => s.Size))
-                {
-                    var sizeText = entry.Size.ToString(CultureInfo.InvariantCulture);
-                    <tr>
-                        <td>
-                            <strong class="fs-5">@sizeText</strong>
-                        </td>
-                        <td>
-                            @if (entry.InStock)
-                            {
-                                <span class="badge bg-success fs-6">
-                                    <i class="bi bi-check-lg me-1" aria-hidden="true"></i>В наличии
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary fs-6">
-                                    <i class="bi bi-x-lg me-1" aria-hidden="true"></i>Нет в наличии
-                                </span>
-                            }
-                        </td>
-                        <td class="text-end">
-                            <button type="submit" name="action" value="toggle"
-                                    class="btn btn-sm btn-outline-warning me-1" title="Переключить наличие"
-                                    formnovalidate
-                                    data-size-value="@sizeText"
-                                    data-size-action="toggle">
-                                <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
-                                <span class="visually-hidden">Переключить наличие размера @sizeText</span>
-                            </button>
-                            <button type="submit" name="action" value="remove"
-                                    class="btn btn-sm btn-outline-danger" title="Удалить размер"
-                                    formnovalidate
-                                    data-size-value="@sizeText"
-                                    data-size-action="remove">
-                                <i class="bi bi-trash" aria-hidden="true"></i>
-                                <span class="visually-hidden">Удалить размер @sizeText</span>
-                            </button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
-else
-{
-    <p class="text-muted text-center py-3">
-        <i class="bi bi-info-circle me-2" aria-hidden="true"></i>Добавьте размеры для этого товара
-    </p>
-}
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="noSizesMessage" class="text-muted text-center py-3" style="@(Model.Count > 0 ? "display: none;" : "")">
+    <i class="bi bi-info-circle me-2" aria-hidden="true"></i>Добавьте размеры для этого товара
+</div>
 
 <script>
     (function () {
-        document.querySelectorAll('button[data-size-action]').forEach(function (btn) {
-            btn.addEventListener('click', function (e) {
-                var size = btn.getAttribute('data-size-value');
-                var input = document.getElementById('newSize');
-                if (input) input.value = size;
-                if (btn.getAttribute('data-size-action') === 'remove') {
-                    if (!confirm('Удалить размер ' + size + '?')) {
-                        e.preventDefault();
-                    }
+        'use strict';
+
+        var btnAddSize = document.getElementById('btnAddSize');
+        var newSizeInput = document.getElementById('newSizeInput');
+        var sizeHiddenInputsContainer = document.getElementById('sizeHiddenInputsContainer');
+        var sizeTableBody = document.getElementById('sizeTableBody');
+        var sizeTableContainer = document.getElementById('sizeTableContainer');
+        var noSizesMessage = document.getElementById('noSizesMessage');
+
+        function toggleTableVisibility() {
+            var hasRows = sizeTableBody.children.length > 0;
+            if (hasRows) {
+                sizeTableContainer.style.display = '';
+                noSizesMessage.style.display = 'none';
+            } else {
+                sizeTableContainer.style.display = 'none';
+                noSizesMessage.style.display = '';
+            }
+        }
+
+        function addSizeRow(size) {
+            var sizeNum = parseFloat(size);
+            if (isNaN(sizeNum) || sizeNum < 20 || sizeNum > 50) {
+                alert('Размер должен быть от 20 до 50.');
+                return;
+            }
+            
+            var sizeText = (sizeNum % 1 === 0) ? sizeNum.toFixed(0) : sizeNum.toFixed(1);
+            var key = sizeText.replace('.', '_');
+
+            if (sizeHiddenInputsContainer.querySelector('[data-size-key="' + key + '"]')) {
+                alert('Размер ' + sizeText + ' уже добавлен.');
+                return;
+            }
+
+            var div = document.createElement('div');
+            div.className = 'size-item-inputs';
+            div.setAttribute('data-size-key', key);
+            div.innerHTML = 
+                '<input type="hidden" name="Product.Sizes.Index" value="' + key + '" />' +
+                '<input type="hidden" name="Product.Sizes[' + key + '].Size" value="' + sizeText + '" />' +
+                '<input type="hidden" name="Product.Sizes[' + key + '].InStock" value="true" />';
+            sizeHiddenInputsContainer.appendChild(div);
+
+            var tr = document.createElement('tr');
+            tr.setAttribute('data-size-key', key);
+            tr.innerHTML = 
+                '<td><strong class="fs-5">' + sizeText + '</strong></td>' +
+                '<td class="size-status-cell">' +
+                    '<span class="badge bg-success fs-6">' +
+                        '<i class="bi bi-check-lg me-1" aria-hidden="true"></i>В наличии' +
+                    '</span>' +
+                '</td>' +
+                '<td class="text-end">' +
+                    '<button type="button" class="btn btn-sm btn-outline-warning me-1 btn-toggle-size" title="Переключить наличие" data-size-key="' + key + '">' +
+                        '<i class="bi bi-arrow-repeat" aria-hidden="true"></i>' +
+                        '<span class="visually-hidden">Переключить наличие размера ' + sizeText + '</span>' +
+                    '</button>' +
+                    '<button type="button" class="btn btn-sm btn-outline-danger btn-remove-size" title="Удалить размер" data-size-key="' + key + '" data-size-text="' + sizeText + '">' +
+                        '<i class="bi bi-trash" aria-hidden="true"></i>' +
+                        '<span class="visually-hidden">Удалить размер ' + sizeText + '</span>' +
+                    '</button>' +
+                '</td>';
+            
+            var rows = Array.from(sizeTableBody.children);
+            var inserted = false;
+            for (var i = 0; i < rows.length; i++) {
+                var rowSize = parseFloat(rows[i].querySelector('strong').textContent);
+                if (rowSize > sizeNum) {
+                    sizeTableBody.insertBefore(tr, rows[i]);
+                    inserted = true;
+                    break;
+                }
+            }
+            if (!inserted) {
+                sizeTableBody.appendChild(tr);
+            }
+
+            toggleTableVisibility();
+            newSizeInput.value = '';
+        }
+
+        sizeTableBody.addEventListener('click', function (e) {
+            var btn = e.target.closest('button');
+            if (!btn) return;
+
+            var key = btn.getAttribute('data-size-key');
+            if (!key) return;
+
+            if (btn.classList.contains('btn-toggle-size')) {
+                var inputsDiv = sizeHiddenInputsContainer.querySelector('[data-size-key="' + key + '"]');
+                var instockInput = inputsDiv.querySelector('input[name="Product.Sizes[' + key + '].InStock"]');
+                var statusCell = sizeTableBody.querySelector('tr[data-size-key="' + key + '"] .size-status-cell');
+                
+                if (instockInput.value === 'true') {
+                    instockInput.value = 'false';
+                    statusCell.innerHTML = 
+                        '<span class="badge bg-secondary fs-6">' +
+                            '<i class="bi bi-x-lg me-1" aria-hidden="true"></i>Нет в наличии' +
+                        '</span>';
+                } else {
+                    instockInput.value = 'true';
+                    statusCell.innerHTML = 
+                        '<span class="badge bg-success fs-6">' +
+                            '<i class="bi bi-check-lg me-1" aria-hidden="true"></i>В наличии' +
+                        '</span>';
+                }
+            } else if (btn.classList.contains('btn-remove-size')) {
+                var sizeText = btn.getAttribute('data-size-text');
+                if (confirm('Удалить размер ' + sizeText + '?')) {
+                    var inputsDiv = sizeHiddenInputsContainer.querySelector('[data-size-key="' + key + '"]');
+                    if (inputsDiv) inputsDiv.remove();
+
+                    var tr = sizeTableBody.querySelector('tr[data-size-key="' + key + '"]');
+                    if (tr) tr.remove();
+
+                    toggleTableVisibility();
+                }
+            }
+        });
+
+        if (btnAddSize) {
+            btnAddSize.addEventListener('click', function () {
+                var val = newSizeInput.value;
+                if (!val) {
+                    alert('Укажите размер.');
+                    return;
+                }
+                addSizeRow(val);
+            });
+        }
+
+        if (newSizeInput) {
+            newSizeInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    var val = newSizeInput.value;
+                    if (val) addSizeRow(val);
                 }
             });
-        });
+        }
     })();
 </script>

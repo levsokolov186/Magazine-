@@ -40,10 +40,9 @@ namespace ShoesStore.Services
             int? excludeId = null,
             CancellationToken cancellationToken = default)
         {
-            // ILIKE is the case-insensitive equality on Postgres; EF.Functions.ILike
-            // produces the matching SQL via Npgsql.
+            // MySQL/MariaDB text comparison is case-insensitive by default under standard collations.
             return _db.Products.AnyAsync(
-                p => EF.Functions.ILike(p.Name, name)
+                p => p.Name == name
                      && (!excludeId.HasValue || p.Id != excludeId.Value),
                 cancellationToken);
         }
@@ -72,23 +71,36 @@ namespace ShoesStore.Services
         }
 
         public async Task<bool> UpdateProductAsync(
-            int id,
-            ProductInput input,
-            IEnumerable<ProductSize> sizes,
+            Product product,
             CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(input);
-            ArgumentNullException.ThrowIfNull(sizes);
+            ArgumentNullException.ThrowIfNull(product);
 
-            var product = await _db.Products
+            var existing = await _db.Products
                 .Include(p => p.Sizes)
-                .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
-            if (product == null) return false;
+                .FirstOrDefaultAsync(p => p.Id == product.Id, cancellationToken);
+            if (existing == null) return false;
 
-            // Replace child collection entirely: simpler than diffing
-            // and safe because cascade-delete is configured for ProductSize.
-            product.Sizes.Clear();
-            product.UpdateFrom(input, sizes);
+            existing.Name = product.Name;
+            existing.Description = product.Description;
+            existing.Price = product.Price;
+            existing.OldPrice = product.OldPrice;
+            existing.Emoji = product.Emoji;
+            existing.Category = product.Category;
+            existing.Material = product.Material;
+            existing.Color = product.Color;
+
+            existing.Sizes.Clear();
+            foreach (var size in product.Sizes)
+            {
+                existing.Sizes.Add(new ProductSize
+                {
+                    Size = size.Size,
+                    InStock = size.InStock
+                });
+            }
+
+            existing.UpdatedAt = DateTime.UtcNow;
 
             await _db.SaveChangesAsync(cancellationToken);
             return true;

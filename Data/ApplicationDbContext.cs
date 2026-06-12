@@ -35,8 +35,6 @@ namespace ShoesStore.Data
                 entity.ToTable("products");
 
                 entity.HasKey(p => p.Id);
-                entity.Property(p => p.Id)
-                    .UseIdentityByDefaultColumn();
 
                 entity.Property(p => p.Name)
                     .IsRequired()
@@ -71,11 +69,9 @@ namespace ShoesStore.Data
                     .IsRequired()
                     .HasMaxLength(100);
 
-                entity.Property(p => p.CreatedAt)
-                    .HasColumnType("timestamp with time zone");
+                entity.Property(p => p.CreatedAt);
 
-                entity.Property(p => p.UpdatedAt)
-                    .HasColumnType("timestamp with time zone");
+                entity.Property(p => p.UpdatedAt);
 
                 entity.HasMany(p => p.Sizes)
                     .WithOne()

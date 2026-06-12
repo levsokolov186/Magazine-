@@ -1,18 +1,27 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using ShoesStore.Models;
 using ShoesStore.Services;
 
 namespace ShoesStore.Pages.Admin
 {
     [Authorize(Roles = "Admin")]
-    public class CreateModel : AdminProductPageModel
+    public class CreateModel : PageModel
     {
-        public CreateModel(IProductService products) : base(products) { }
+        private readonly IProductService _products;
+
+        public CreateModel(IProductService products)
+        {
+            _products = products;
+        }
+
+        [BindProperty]
+        public ProductInput Product { get; set; } = new();
 
         public IActionResult OnGet()
         {
-            SizeEntries = new List<ProductSize>
+            Product.Sizes = new List<ProductSize>
             {
                 new() { Size = 36, InStock = true },
                 new() { Size = 37, InStock = true },
@@ -23,27 +32,21 @@ namespace ShoesStore.Pages.Admin
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(
-            string? action,
-            decimal? newSize,
-            CancellationToken cancellationToken)
+        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
         {
-            var sizeResult = HandleSizeAction(action, newSize);
-            if (sizeResult != null) return sizeResult;
-
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            if (await Products.ProductNameExistsAsync(Product.Name, cancellationToken: cancellationToken))
+            if (await _products.ProductNameExistsAsync(Product.Name, cancellationToken: cancellationToken))
             {
                 ModelState.AddModelError("Product.Name", "Товар с таким названием уже существует");
                 return Page();
             }
 
-            var product = Models.Product.FromInput(Product, SizeEntries);
-            await Products.AddProductAsync(product, cancellationToken);
+            var product = Product.ToEntity();
+            await _products.AddProductAsync(product, cancellationToken);
 
             TempData["SuccessMessage"] = "Товар успешно создан";
             return RedirectToPage("Index");

@@ -158,9 +158,55 @@
             alert('Корзина пуста.');
             return;
         }
-        // Real checkout/order processing is not implemented yet — make that
-        // explicit instead of pretending the order was placed and clearing the cart.
-        alert('Оформление заказа пока недоступно. Свяжитесь с нами, чтобы оформить покупку — корзина сохранена.');
+
+        var items = cart.map(function(item) {
+            return {
+                id: Number(item.id),
+                name: item.name || '',
+                price: Number(item.price) || 0,
+                size: Number(item.size) || 0,
+                quantity: Number(item.quantity) || 0
+            };
+        });
+
+        var checkoutBtn = document.getElementById('checkoutBtn');
+        checkoutBtn.disabled = true;
+        var originalText = checkoutBtn.innerHTML;
+        checkoutBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Оформление...';
+
+        fetch('/Cart?handler=Checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ items: items })
+        })
+        .then(function(response) {
+            if (response.ok) {
+                return response.json();
+            }
+            return response.json().then(function(err) {
+                throw err;
+            });
+        })
+        .then(function(data) {
+            alert('Заказ успешно оформлен! Корзина очищена.');
+            ss.writeCart([]);
+            renderCart();
+        })
+        .catch(function(error) {
+            if (error && error.errors && Array.isArray(error.errors)) {
+                alert('Не удалось оформить заказ:\n\n' + error.errors.join('\n'));
+            } else if (error && error.message) {
+                alert('Ошибка: ' + error.message);
+            } else {
+                alert('Произошла непредвиденная ошибка при оформлении заказа. Попробуйте еще раз.');
+            }
+        })
+        .finally(function() {
+            checkoutBtn.disabled = false;
+            checkoutBtn.innerHTML = originalText;
+        });
     }
 
     function init() {

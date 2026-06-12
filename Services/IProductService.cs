@@ -23,9 +23,7 @@ namespace ShoesStore.Services
         Task<bool> RemoveProductAsync(int id, CancellationToken cancellationToken = default);
 
         Task<bool> UpdateProductAsync(
-            int id,
-            ProductInput input,
-            IEnumerable<ProductSize> sizes,
+            Product product,
             CancellationToken cancellationToken = default);
     }
 }

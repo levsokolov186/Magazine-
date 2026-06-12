@@ -28,11 +28,14 @@ static void ConfigureServices(WebApplicationBuilder builder)
             "Add it to appsettings.json or set the ConnectionStrings__DefaultConnection env var.");
 
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseNpgsql(connectionString, npgsql =>
+    {
+        var serverVersion = ServerVersion.AutoDetect(connectionString);
+        options.UseMySql(connectionString, serverVersion, mysql =>
         {
-            npgsql.MigrationsHistoryTable("__ef_migrations_history");
-            npgsql.EnableRetryOnFailure(maxRetryCount: 3);
-        }));
+            mysql.MigrationsHistoryTable("__ef_migrations_history");
+            mysql.EnableRetryOnFailure(maxRetryCount: 3);
+        });
+    });
 
     builder.Services
         .AddIdentity<ApplicationUser, IdentityRole>(ConfigureIdentityOptions)
