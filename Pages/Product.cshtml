@@ -3,51 +3,51 @@
 @using System.Globalization
 @using System.Text.Encodings.Web
 @{
-    ViewData["Title"] = Model.Name;
-    var nameJs = JavaScriptEncoder.Default.Encode(Model.Name);
-    var emojiJs = JavaScriptEncoder.Default.Encode(Model.Emoji);
-    var categoryJs = JavaScriptEncoder.Default.Encode(Model.Category);
+    ViewData["Title"] = Model.Product.Name;
+    var nameJs = JavaScriptEncoder.Default.Encode(Model.Product.Name);
+    var emojiJs = JavaScriptEncoder.Default.Encode(Model.Product.Emoji);
+    var categoryJs = JavaScriptEncoder.Default.Encode(Model.Product.Category);
 }
 
 <div class="container py-5">
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Каталог</a></li>
-            <li class="breadcrumb-item">@Model.Category</li>
-            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+            <li class="breadcrumb-item">@Model.Product.Category</li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Product.Name</li>
         </ol>
     </nav>
 
     <div class="row g-5">
         <div class="col-lg-6">
             <div class="product-detail-image rounded-4 d-flex align-items-center justify-content-center"
-                 role="img" aria-label="@Model.Name">
-                <span class="product-detail-emoji">@Model.Emoji</span>
+                 role="img" aria-label="@Model.Product.Name">
+                <span class="product-detail-emoji">@Model.Product.Emoji</span>
             </div>
         </div>
 
         <div class="col-lg-6">
-            @if (!string.IsNullOrEmpty(Model.Badge))
+            @if (Model.Product.ShouldShowBadge)
             {
-                <span class="badge @(Model.HasDiscount ? "bg-danger" : "bg-success") mb-3 px-3 py-2 fs-6">@Model.Badge</span>
+                <span class="badge @(Model.Product.HasDiscount ? "bg-danger" : "bg-success") mb-3 px-3 py-2 fs-6">@Model.Product.DiscountBadge</span>
             }
 
-            <h1 class="fw-bold mb-2">@Model.Name</h1>
-            <p class="text-muted fs-5 mb-4">@Model.Category</p>
+            <h1 class="fw-bold mb-2">@Model.Product.Name</h1>
+            <p class="text-muted fs-5 mb-4">@Model.Product.Category</p>
 
             <div class="mb-4">
-                @if (Model.HasDiscount)
+                @if (Model.Product.HasDiscount)
                 {
-                    var savings = Model.OldPrice!.Value - Model.Price;
+                    var savings = Model.Product.OldPrice!.Value - Model.Product.Price;
                     <div class="d-flex align-items-baseline gap-3 mb-2">
-                        <span class="fs-2 fw-bold price-color">@Html.Raw(Model.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</span>
-                        <span class="fs-5 text-muted price-old">@Html.Raw(Model.OldPrice!.Value.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</span>
+                        <span class="fs-2 fw-bold price-color">@Html.Raw(Model.Product.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</span>
+                        <span class="fs-5 text-muted price-old">@Html.Raw(Model.Product.OldPrice!.Value.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</span>
                     </div>
                     <span class="badge bg-danger fs-6">Выгода @Html.Raw(savings.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</span>
                 }
                 else
                 {
-                    <span class="fs-2 fw-bold price-color">@Html.Raw(Model.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</span>
+                    <span class="fs-2 fw-bold price-color">@Html.Raw(Model.Product.Price.ToString("N0", CultureInfo.InvariantCulture).Replace(",", "&nbsp;"))&nbsp;₽</span>
                 }
             </div>
 
@@ -56,9 +56,9 @@
             <div class="mb-4">
                 <h2 class="h5 fw-bold mb-3">Размер <span class="text-danger" aria-hidden="true">*</span></h2>
                 <div class="d-flex flex-wrap gap-2" id="sizeSelector" role="radiogroup" aria-label="Выбор размера">
-                    @if (Model.Sizes.Any())
+                    @if (Model.Product.Sizes.Any(s => s.InStock))
                     {
-                        @foreach (var size in Model.Sizes.OrderBy(s => s.Size))
+                        @foreach (var size in Model.Product.Sizes.Where(s => s.InStock).OrderBy(s => s.Size))
                         {
                             <button type="button" class="btn-size" role="radio" aria-checked="false" data-size="@size.Size.ToString(CultureInfo.InvariantCulture)">
                                 @size.Size.ToString(CultureInfo.InvariantCulture)
@@ -79,9 +79,9 @@
                 <h2 class="h5 fw-bold mb-3">Характеристики</h2>
                 <dl class="product-specs">
                     <dt>Материал:</dt>
-                    <dd>@Model.Material</dd>
+                    <dd>@Model.Product.Material</dd>
                     <dt>Цвет:</dt>
-                    <dd>@Model.Color</dd>
+                    <dd>@Model.Product.Color</dd>
                 </dl>
             </div>
 
@@ -104,15 +104,15 @@
             <div class="card">
                 <div class="card-body p-4 p-md-5">
                     <h2 class="h3 fw-bold mb-4">Описание</h2>
-                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    @if (!string.IsNullOrWhiteSpace(Model.Product.Description))
                     {
-                        <p class="fs-5 text-muted">@Model.Description</p>
+                        <p class="fs-5 text-muted">@Model.Product.Description</p>
                     }
                     else
                     {
                         <p class="fs-5 text-muted">
-                            @Model.Name — стильная и комфортная обувь из коллекции 2026 года.
-                            @if (!string.IsNullOrEmpty(Model.Material) && Model.Material.Contains("кожа", StringComparison.OrdinalIgnoreCase))
+                            @Model.Product.Name — стильная и комфортная обувь из коллекции 2026 года.
+                            @if (!string.IsNullOrEmpty(Model.Product.Material) && Model.Product.Material.Contains("кожа", StringComparison.OrdinalIgnoreCase))
                             {
                                 <span>Изготовлено из натуральной кожи, которая обеспечивает долговечность и комфорт при носке.</span>
                             }
@@ -145,9 +145,9 @@
 @section Scripts {
     <script>
         window.PRODUCT_DATA = {
-            id: @Model.ProductId,
+            id: @Model.Product.Id,
             name: "@Html.Raw(nameJs)",
-            price: @Model.Price.ToString(CultureInfo.InvariantCulture),
+            price: @Model.Product.Price.ToString(CultureInfo.InvariantCulture),
             emoji: "@Html.Raw(emojiJs)",
             category: "@Html.Raw(categoryJs)"
         };

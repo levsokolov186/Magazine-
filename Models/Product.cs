@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShoesStore.Models
 {
@@ -55,12 +56,15 @@ namespace ShoesStore.Models
 
         public List<ProductSize> Sizes { get; set; } = new();
 
+        [NotMapped]
         public bool HasDiscount =>
             OldPrice.HasValue && OldPrice.Value > 0 && OldPrice.Value > Price;
 
+        [NotMapped]
         public bool IsNew =>
             CreatedAt != default && (DateTime.UtcNow - CreatedAt) <= NewProductWindow;
 
+        [NotMapped]
         public string DiscountBadge
         {
             get
@@ -73,42 +77,7 @@ namespace ShoesStore.Models
                 return IsNew ? NewBadge : string.Empty;
             }
         }
-
-        public static Product FromInput(ProductInput input, IEnumerable<ProductSize> sizes)
-        {
-            var product = new Product();
-            product.ApplyFrom(input, sizes);
-            return product;
-        }
-
-        public void UpdateFrom(ProductInput input, IEnumerable<ProductSize> sizes)
-        {
-            ApplyFrom(input, sizes);
-        }
-
-        private void ApplyFrom(ProductInput input, IEnumerable<ProductSize> sizes)
-        {
-            Name = input.Name;
-            Description = input.Description;
-            Price = input.Price;
-            OldPrice = input.OldPrice;
-            Emoji = input.Emoji;
-            Category = input.Category;
-            Material = input.Material;
-            Color = input.Color;
-            Sizes = CloneSizes(sizes);
-
-            var now = DateTime.UtcNow;
-            UpdatedAt = now;
-            if (CreatedAt == default)
-            {
-                CreatedAt = now;
-            }
-        }
-
+        [NotMapped]
         public bool ShouldShowBadge => HasDiscount || IsNew;
-
-        private static List<ProductSize> CloneSizes(IEnumerable<ProductSize> sizes) =>
-            sizes.Select(s => new ProductSize { Size = s.Size, InStock = s.InStock }).ToList();
     }
 }

@@ -42,3 +42,9 @@ appsettings.Development.json
 
 # Logs
 *.log
+<<<<<<< HEAD
+
+=======
+>>>>>>> Egor
+
+*.bin

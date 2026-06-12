@@ -9,23 +9,24 @@ namespace ShoesStore.Pages.Admin
     [Authorize(Roles = "Admin")]
     public class IndexModel : PageModel
     {
-        private readonly JsonDatabaseService _db;
+        private readonly IProductService _products;
 
-        public IndexModel(JsonDatabaseService db)
+        public IndexModel(IProductService products)
         {
-            _db = db;
+            _products = products;
         }
 
         public IList<Product> Products { get; set; } = new List<Product>();
 
-        public void OnGet()
+        public async Task OnGetAsync(CancellationToken cancellationToken)
         {
-            Products = _db.Products.OrderByDescending(p => p.CreatedAt).ToList();
+            var all = await _products.GetProductsAsync(cancellationToken);
+            Products = all.OrderByDescending(p => p.CreatedAt).ToList();
         }
 
-        public IActionResult OnPostDelete(int id)
+        public async Task<IActionResult> OnPostDeleteAsync(int id, CancellationToken cancellationToken)
         {
-            if (_db.RemoveProduct(id))
+            if (await _products.RemoveProductAsync(id, cancellationToken))
             {
                 TempData["SuccessMessage"] = "Товар успешно удалён";
             }
